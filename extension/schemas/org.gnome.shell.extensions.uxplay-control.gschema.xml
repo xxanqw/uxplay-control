@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.uxplay-control" path="/org/gnome/shell/extensions/uxplay-control/">
+    <key name="server-name" type="s">
+      <default>'UXPlay-GNOME'</default>
+      <summary>AirPlay server name</summary>
+    </key>
+    <key name="no-hostname" type="b">
+      <default>false</default>
+      <summary>Do not add hostname suffix</summary>
+    </key>
+    
+    <key name="security-mode" type="i">
+      <default>0</default>
+      <summary>Security mode for access control (Empty values have no effect)</summary>
+    </key>
+    <key name="pin-code" type="s">
+      <default>''</default>
+      <summary>4-digit PIN code</summary>
+    </key>
+    <key name="password" type="s">
+      <default>''</default>
+      <summary>Password for access control</summary>
+    </key>
+    
+    <key name="h265" type="b">
+      <default>false</default>
+      <summary>Enable H265 support</summary>
+    </key>
+    <key name="resolution-preset" type="i">
+      <default>0</default>
+      <summary>Resolution preset selection</summary>
+    </key>
+    <key name="custom-resolution" type="s">
+      <default>'1920x1080@60'</default>
+      <summary>Custom resolution string</summary>
+    </key>
+    <key name="fullscreen" type="b">
+      <default>false</default>
+      <summary>Start in fullscreen mode</summary>
+    </key>
+    
+    <key name="vsync" type="b">
+      <default>true</default>
+      <summary>Video sync enabled</summary>
+    </key>
+    <key name="audio-latency" type="d">
+      <default>0.00</default>
+      <summary>Audio latency in seconds</summary>
+    </key>
+    <key name="initial-volume" type="d">
+      <default>1.0</default>
+      <summary>UXPlay Volume (requires PulseAudio)</summary>
+      <description>Controls the output volume (0.0-1.0) from UXPlay. This does not affect the source device's volume. Using this setting forces the use of "pulsesink" as the GStreamer audio sink. The default is 1.0 (no change).</description>
+    </key>
+    
+    <key name="use-custom-ports" type="b">
+      <default>false</default>
+      <summary>Use custom port configuration</summary>
+    </key>
+    <key name="port-config" type="s">
+      <default>''</default>
+      <summary>Port configuration string</summary>
+    </key>
+    <key name="reset-timeout" type="i">
+      <default>15</default>
+      <summary>Reset timeout in seconds</summary>
+    </key>
+    <key name="debug" type="b">
+      <default>false</default>
+      <summary>Enable debug logging (Logs panel will die &amp;lt;3) </summary>
+    </key>
+
+    <key name="uxplay-logs" type="as">
+      <default>[]</default>
+      <summary>Stores UXPlay log messages</summary>
+      <description>An array of strings, each representing a log line.</description>
+    </key>
+    <key name="max-log-lines" type="i">
+      <default>256</default>
+      <summary>Maximum number of log lines to store</summary>
+      <description>Defines the maximum number of log lines to keep in GSettings. Oldest lines are removed first. Higher values may impact performance.</description>
+    </key>
+  </schema>
+</schemalist>
