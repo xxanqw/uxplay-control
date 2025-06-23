@@ -49,7 +49,7 @@ Don't forget that you need to have `uxplay`, `gnome-tweaks`, and `gnome-extensio
 
 This extension serves as a companion to [UXPlay](https://github.com/FDH2/UXPlay), developed by FDH2. Please note that UXPlay **must be installed** independently as a prerequisite for this extension to operate correctly.
 
-**gnome-tweaks**: Available on [Flathub](https://flathub.org/apps/org.gnome.tweaks)  
+**gnome-tweaks**: Available on your distro repositories.
 **gnome-extensions**: Available on [Flathub](https://flathub.org/apps/org.gnome.Extensions)
 
 ---
