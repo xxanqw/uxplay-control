@@ -1,0 +1,15 @@
+{
+  "name": "UXPlay Control",
+  "description": "Control UXPlay AirPlay server from the top bar",
+  "uuid": "uxplay-control@xxanqw",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48"
+  ],
+  "version": 3,
+  "url": "https://xxanqw.pp.ua/",
+  "gettext-domain": "uxplay-control",
+  "settings-schema": "org.gnome.shell.extensions.uxplay-control"
+}

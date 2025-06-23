@@ -1,0 +1,11 @@
+<!-- 
+    Do not include this file in release on gnome site
+    This file is used to define the resources for the extension.
+-->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/gnome/shell/extensions/uxplay-control">
+    <file alias="icons/overlapping-windows-symbolic.svg">overlapping-windows-symbolic.svg</file>
+  </gresource>
+</gresources>

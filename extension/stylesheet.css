@@ -1,0 +1,24 @@
+.uxplay-active {
+    color: #4CAF50 !important;
+}
+
+.system-status-icon.uxplay-active {
+    color: #4CAF50 !important;
+}
+
+.panel-button .system-status-icon {
+    icon-size: 16px;
+    color: #eeeeee !important;
+}
+
+.panel-button .system-status-icon.uxplay-active {
+    color: #4CAF50 !important;
+}
+
+.uxplay-control-menu {
+    min-width: 200px;
+}
+
+.uxplay-status-item {
+    font-weight: bold;
+}
