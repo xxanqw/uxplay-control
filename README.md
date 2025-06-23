@@ -17,7 +17,7 @@ Don't forget that you need to have `uxplay`, `gnome-tweaks`, and `gnome-extensio
 1. Clone this repository:
     ```bash
     git clone <repository-url>
-    cd uxplay-control
+    cd uxplay-control/extension
     ```
 
 2. Create the extension directory:
