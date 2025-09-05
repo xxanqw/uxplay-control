@@ -11,39 +11,51 @@
 UXPlay Control is an extension for GNOME Shell that allows users to start and configure the UXPlay command-line interface through a simple GUI on the top bar and comprehensive settings within the GNOME Extensions app.
 
 ### Install it locally
+
 If for some reason you don't want to use the official GNOME Extensions site, you can install the extension manually.  
 Don't forget that you need to have `uxplay`, `gnome-tweaks`, and `gnome-extensions` installed on your system to actually use the extension.
 
 1. Clone this repository:
-    ```bash
-    git clone https://github.com/xxanqw/uxplay-control.git
-    cd uxplay-control/extension
-    ```
 
-2. Create the extension directory:
-    ```bash
-    mkdir -p ~/.local/share/gnome-shell/extensions/uxplay-control@xxanqw
-    ```
+   ```bash
+   git clone https://github.com/xxanqw/uxplay-control.git
+   cd uxplay-control
+   ```
 
-3. Compile GSettings schema:
-    ```bash
-    glib-compile-schemas schemas/
-    ```
+2. Run the packaging script:
 
-4. Compile GResources:
-    ```bash
-    glib-compile-resources resources.gresource.xml
-    ```
+   ```bash
+   ./package.sh <<<'y' # 'y' to install automatically, 'n' to install manually
+   ```
 
-5. Copy extension files to the directory:
-    ```bash
-    cp -r * ~/.local/share/gnome-shell/extensions/uxplay-control@xxanqw/
-    ```
+3. Restart GNOME Shell (Alt+F2, type `r`, press Enter) and enable the extension.
 
-6. Restart GNOME Shell (Alt+F2, type `r`, press Enter) and enable the extension.
+### Development
 
----
+To set up a development environment, follow these steps:
 
+1. Fork this repository, then clone your fork:
+
+   ```bash
+   git clone https://github.com/your-username/uxplay-control.git
+   cd uxplay-control
+   ```
+
+2. Do your changes.
+
+3. Run the packaging script:
+
+   ```bash
+   ./package.sh <<<'y' # 'y' to install automatically, 'n' to install manually
+   ```
+
+4. Run the nested session script to test your changes in a nested GNOME Shell session:
+
+   ```bash
+   ./nested-session.sh
+   ```
+
+5. Create a pull request if you want to contribute your changes.
 
 ### Credits
 
@@ -58,4 +70,3 @@ This extension serves as a companion to [UXPlay](https://github.com/FDH2/UXPlay)
 
 licensed under **GPLv3**  
 _made with ❤️ by xxanqw_
-

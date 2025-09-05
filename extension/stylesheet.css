@@ -22,3 +22,26 @@
 .uxplay-status-item {
     font-weight: bold;
 }
+
+.about-avatar {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.about-nickname {
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.about-buttons {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.about-button {
+    min-width: 140px;
+    padding-left: 12px;
+    padding-right: 12px;
+}

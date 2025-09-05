@@ -8,7 +8,7 @@
     "47",
     "48"
   ],
-  "version": 3,
+  "version": 4,
   "url": "https://xxanqw.pp.ua/",
   "gettext-domain": "uxplay-control",
   "settings-schema": "org.gnome.shell.extensions.uxplay-control"
