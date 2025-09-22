@@ -1,0 +1,34 @@
+name: Package Extension
+
+on:
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install GNOME dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          gnome-shell \
+          glib-compile-schemas \
+          glib-compile-resources \
+          gnome-extensions
+
+    - name: Make package script executable
+      run: chmod +x package.sh
+
+    - name: Package extension
+      run: ./package.sh <<< 'n'
+
+    - name: Upload packaged extension
+      uses: actions/upload-artifact@v4
+      with:
+        name: packaged-extension
+        path: extension/*.zip
+        retention-days: 30
