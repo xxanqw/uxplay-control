@@ -16,9 +16,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y \
           gnome-shell \
-          glib-compile-schemas \
-          glib-compile-resources \
-          gnome-extensions
+          libglib2.0-dev \
+          gettext \
+          gnome-shell-extensions
 
     - name: Make package script executable
       run: chmod +x package.sh
