@@ -1,6 +1,6 @@
 {
   "name": "UXPlay Control",
-  "description": "Control UXPlay AirPlay server from the top bar",
+  "description": "Control UXPlay AirPlay server from the top bar. (Requires UXPlay to be installed)",
   "uuid": "uxplay-control@xxanqw",
   "shell-version": [
     "45",
@@ -10,7 +10,7 @@
     "49"
   ],
   "version": 5,
-  "url": "https://xxanqw.pp.ua/",
+  "url": "https://xxanqw.pp.ua/uxpc",
   "gettext-domain": "uxplay-control",
   "settings-schema": "org.gnome.shell.extensions.uxplay-control"
 }
