@@ -11,6 +11,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Cache apt packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          /var/cache/apt
+          /var/lib/apt
+        key: ${{ runner.os }}-apt-${{ hashFiles('**/.github/workflows/package.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-apt-
+
     - name: Install GNOME dependencies
       run: |
         sudo apt-get update
