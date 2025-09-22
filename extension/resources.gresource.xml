@@ -7,5 +7,6 @@
 <gresources>
   <gresource prefix="/org/gnome/shell/extensions/uxplay-control">
     <file alias="icons/overlapping-windows-symbolic.svg">icons/overlapping-windows-symbolic.svg</file>
+    <file alias="icons/ava.png">icons/ava.png</file>
   </gresource>
 </gresources>

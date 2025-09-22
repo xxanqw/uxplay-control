@@ -405,34 +405,17 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         });
         avatar.add_css_class('about-avatar');
 
-        const loadAvatar = async () => {
-            try {
-                const session = new Soup.Session();
-                const message = Soup.Message.new('GET', 'https://cdn.xserv.pp.ua/files/images/xxanqw/ava2.png');
-
-                const bytes = await new Promise((resolve, reject) => {
-                    session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, (session, result) => {
-                        try {
-                            const b = session.send_and_read_finish(result);
-                            resolve(b);
-                        } catch (e) {
-                            reject(e);
-                        }
-                    });
-                });
-
-                if (bytes && message.get_status() === Soup.Status.OK) {
-                    const stream = Gio.MemoryInputStream.new_from_bytes(bytes);
-                    const pixbuf = GdkPixbuf.Pixbuf.new_from_stream_at_scale(stream, 100, 100, true, null);
-                    const texture = Gdk.Texture.new_for_pixbuf(pixbuf);
-                    avatar.set_custom_image(texture);
-                }
-            } catch (e) {
-                console.log('Could not load avatar image from URL:', e);
+        try {
+            const resourcePath = '/org/gnome/shell/extensions/uxplay-control/icons/ava.png';
+            const stream = Gio.Resource.load(resourcePath);
+            if (stream) {
+                const pixbuf = GdkPixbuf.Pixbuf.new_from_stream_at_scale(stream, 100, 100, true, null);
+                const texture = Gdk.Texture.new_for_pixbuf(pixbuf);
+                avatar.set_custom_image(texture);
             }
-        };
-
-        loadAvatar();
+        } catch (e) {
+            console.log('Could not load avatar image from gresource:', e);
+        }
 
         const nicknameLabel = new Gtk.Label({
             label: 'xxanqw',
