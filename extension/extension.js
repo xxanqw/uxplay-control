@@ -172,6 +172,13 @@ const UXPlayIndicator = GObject.registerClass(
                 let base_command = ['uxplay'];
                 let args = [...command_prefix, ...base_command];
 
+                if (this._settings.get_boolean('use-custom-ports')) {
+                    const portConfig = this._settings.get_string('port-config').trim();
+                    if (portConfig) {
+                        args.push('-p', portConfig);
+                    }
+                }
+
                 const serverName = this._settings.get_string('server-name');
                 if (serverName) {
                     args.push('-n', serverName);
