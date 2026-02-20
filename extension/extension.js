@@ -23,6 +23,9 @@ function _buildConfigContent(settings) {
         `# Last updated: ${ts}`,
         `# Path: ${_configFile()}`,
         '# Edit settings via the Preferences window to keep this file in sync.',
+        '#',
+        '# You can freely copy this file into global UXPlay config folder, so settings apply even from terminal.',
+        '# But global config will not be synced with UXPlay Control.'
         '',
     ];
 

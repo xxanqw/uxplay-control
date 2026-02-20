@@ -7,7 +7,6 @@
       <description>Tracks the configuration schema version. Used to detect and handle breaking upgrades automatically. Do not edit manually.</description>
     </key>
 
-    <!-- Network / Server Identity -->
     <key name="server-name" type="s">
       <default>'UXPlay-GNOME'</default>
       <summary>AirPlay server name</summary>
@@ -37,7 +36,6 @@
       <summary>Bluetooth Low Energy beacon path</summary>
     </key>
 
-    <!-- Security & Access Control -->
     <key name="security-mode" type="i">
       <default>0</default>
       <summary>Security mode for access control (Empty values have no effect)</summary>
@@ -79,7 +77,6 @@
       <summary>Custom private cryptographic key file path</summary>
     </key>
 
-    <!-- Video Geometry & Rendering -->
     <key name="resolution-preset" type="i">
       <default>0</default>
       <summary>Resolution preset selection</summary>
@@ -125,7 +122,6 @@
       <summary>Host screensaver behavior (0: default, 1: on active, 2: always on)</summary>
     </key>
 
-    <!-- Audio -->
     <key name="vsync" type="b">
       <default>true</default>
       <summary>Video sync enabled (timestamp synchronization)</summary>
@@ -163,7 +159,6 @@
       <summary>DACP telemetry export path</summary>
     </key>
 
-    <!-- HLS -->
     <key name="hls-support" type="b">
       <default>false</default>
       <summary>Enable direct HTTP Live Streaming interception</summary>
@@ -173,7 +168,6 @@
       <summary>Specific linguistic audio track selection</summary>
     </key>
 
-    <!-- GStreamer Advanced -->
     <key name="gst-parser" type="s">
       <default>''</default>
       <summary>Exact GStreamer parser element</summary>
@@ -207,7 +201,6 @@
       <summary>Color space matrix (0: auto, 1: bt709, 2: srgb)</summary>
     </key>
 
-    <!-- RTP / Muxing -->
     <key name="vrtp-pipeline" type="s">
       <default>''</default>
       <summary>RTP video forward pipeline</summary>
@@ -221,7 +214,6 @@
       <summary>Bypass rendering and encode to .mp4 file</summary>
     </key>
 
-    <!-- Telemetry -->
     <key name="fps-data" type="b">
       <default>false</default>
       <summary>Print real-time client performance telemetry</summary>
@@ -243,7 +235,6 @@
       <summary>Enable debug logging</summary>
     </key>
 
-    <!-- Log Management -->
     <key name="uxplay-logs" type="as">
       <default>[]</default>
       <summary>Stores UXPlay log messages</summary>

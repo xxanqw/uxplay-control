@@ -1,0 +1,734 @@
+# Ukrainian translations for PACKAGE package.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-20 11:03+0200\n"
+"PO-Revision-Date: 2026-02-20 11:03+0200\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: ../extension.js:205 ../extension.js:225
+msgid "UXPlay Control"
+msgstr "Управління UXPlay"
+
+#: ../extension.js:205
+msgid "⚠ Could not create config file at ~/.config/uxplay-control/uxplayrc."
+msgstr "⚠ Не вдалося створити конфіг-файл: ~/.config/uxplay-control/uxplayrc."
+
+#: ../extension.js:211
+msgid "UXPlay Control — Upgraded to v8"
+msgstr "UXPlay Control — Оновлено до v8"
+
+#: ../extension.js:217
+msgid ""
+"Config file created at ~/.config/uxplay-control/uxplayrc. Manage UxPlay "
+"settings through Preferences."
+msgstr ""
+"Файл конфігурації створено за шляхом ~/.config/uxplay-control/uxplayrc. "
+"Управляйте налаштуваннями UxPlay через \"Налаштування\"."
+
+#: ../extension.js:247 ../extension.js:435
+msgid "Status: Stopped"
+msgstr "Статус: Зупинено"
+
+#: ../extension.js:251
+msgid "Preferences"
+msgstr "Налаштування"
+
+#: ../extension.js:421
+msgid "Status: UXPlay not found"
+msgstr "Статус: UXPlay не знайдено"
+
+#: ../extension.js:422 ../extension.js:436
+msgid "Start UXPlay"
+msgstr "Запустити UXPlay"
+
+#: ../extension.js:430
+msgid "Status: Running"
+msgstr "Статус: Запущено"
+
+#: ../extension.js:431
+msgid "Stop UXPlay"
+msgstr "Зупинити UXPlay"
+
+#: ../prefs.js:19
+msgid "Error"
+msgstr "Помилка"
+
+#: ../prefs.js:75
+msgid "Open Docs"
+msgstr "Відкрити Документацію"
+
+#: ../prefs.js:85
+msgid "Server & Security"
+msgstr "Сервер та безпека"
+
+#: ../prefs.js:87
+msgid "Server Identity"
+msgstr "Ідентифікація сервера"
+
+#: ../prefs.js:88
+msgid "Server Name"
+msgstr "Ім'я сервера"
+
+#: ../prefs.js:89
+msgid "No Hostname Suffix"
+msgstr "Без суфікса імені хоста"
+
+#: ../prefs.js:90
+msgid "MAC Address (Device ID)"
+msgstr "MAC-адреса (ID пристрою)"
+
+#: ../prefs.js:91
+msgid "BLE Beacon File"
+msgstr "Файл BLE Beacon"
+
+#: ../prefs.js:94
+msgid "Network & Ports"
+msgstr "Мережа та порти"
+
+#: ../prefs.js:95
+msgid "Legacy AirPlay Ports"
+msgstr "Стандартні порти AirPlay"
+
+#: ../prefs.js:96
+msgid "Use Custom Ports"
+msgstr "Використовувати власні порти"
+
+#: ../prefs.js:97
+msgid "Port Configuration"
+msgstr "Налаштування портів"
+
+#: ../prefs.js:102
+msgid "Security Settings"
+msgstr "Налаштування безпеки"
+
+#: ../prefs.js:103 ../prefs.js:157 ../prefs.js:158
+msgid "None"
+msgstr "Немає"
+
+#: ../prefs.js:103
+msgid "PIN Code"
+msgstr ""
+
+#: ../prefs.js:103 ../prefs.js:109
+msgid "Password"
+msgstr "Пароль"
+
+#: ../prefs.js:104
+msgid "Security Mode"
+msgstr "Режим безпеки"
+
+#: ../prefs.js:108
+msgid "PIN Code (4-digit)"
+msgstr "PIN-код (4 цифри)"
+
+#: ../prefs.js:123
+msgid "Client Registry Path"
+msgstr "Шлях до реєстру клієнтів"
+
+#: ../prefs.js:124
+msgid "Custom Key Path"
+msgstr "Шлях до власного ключа"
+
+#: ../prefs.js:127
+msgid "Access Control"
+msgstr "Контроль доступу"
+
+#: ../prefs.js:128
+msgid "Whitelist Mode (Restrict)"
+msgstr "Режим білого списку (Restrict)"
+
+#: ../prefs.js:129
+msgid "Allowed Devices (CSV)"
+msgstr "Дозволені пристрої (CSV)"
+
+#: ../prefs.js:130
+msgid "Blocked Devices (CSV)"
+msgstr "Заблоковані пристрої (CSV)"
+
+#: ../prefs.js:131
+msgid "Drop on New Connection"
+msgstr "Відключати при новому з'єднанні"
+
+#: ../prefs.js:132
+msgid "Clear Frame on Reset"
+msgstr "Очищати кадр при скиданні"
+
+#: ../prefs.js:140
+msgid "Video"
+msgstr "Відео"
+
+#: ../prefs.js:142
+msgid "Display Settings"
+msgstr "Налаштування дисплея"
+
+#: ../prefs.js:143
+msgid "H265 Support"
+msgstr "Підтримка H265"
+
+#: ../prefs.js:144
+msgid "1920x1080@60 (16:9 Desktop)"
+msgstr ""
+
+#: ../prefs.js:144
+msgid "3840x2160@60 (4K 16:9 Desktop)"
+msgstr ""
+
+#: ../prefs.js:144
+msgid "1280x720@60 (HD 16:9 Desktop)"
+msgstr ""
+
+#: ../prefs.js:144
+msgid "1170x2532@60 (iPhone 12/13/14 Pro)"
+msgstr ""
+
+#: ../prefs.js:144
+msgid "1290x2796@60 (iPhone 14/15 Pro Max)"
+msgstr ""
+
+#: ../prefs.js:144
+msgid "1080x1920@60 (1080p Portrait)"
+msgstr ""
+
+#: ../prefs.js:144
+msgid "1920x1440@60 (4:3 iPad)"
+msgstr ""
+
+#: ../prefs.js:144
+msgid "2732x2048@60 (iPad Pro 12.9\")"
+msgstr ""
+
+#: ../prefs.js:144
+msgid "Custom"
+msgstr "Власний вибір"
+
+#: ../prefs.js:145
+msgid "Resolution"
+msgstr "Роздільна здатність"
+
+#: ../prefs.js:146
+msgid "Custom Resolution"
+msgstr "Власна роздільна здатність"
+
+#: ../prefs.js:150
+msgid "FPS Limit"
+msgstr "Ліміт FPS"
+
+#: ../prefs.js:150
+msgid "0 = unlimited"
+msgstr "0 = без ліміту"
+
+#: ../prefs.js:155
+msgid "Geometry & Windows"
+msgstr "Геометрія та вікна"
+
+#: ../prefs.js:156
+msgid "Fullscreen Mode"
+msgstr "Повноекранний режим"
+
+#: ../prefs.js:157
+msgid "Video Flip"
+msgstr "Віддзеркалення відео"
+
+#: ../prefs.js:157
+msgid "Horizontal"
+msgstr "Горизонтальне"
+
+#: ../prefs.js:157
+msgid "Vertical"
+msgstr "Вертикальне"
+
+#: ../prefs.js:157
+msgid "Inversion"
+msgstr "Інверсія"
+
+#: ../prefs.js:158
+msgid "Video Rotation"
+msgstr "Обертання відео"
+
+#: ../prefs.js:158
+msgid "Right (90°)"
+msgstr "Праворуч (90°)"
+
+#: ../prefs.js:158
+msgid "Left (-90°)"
+msgstr "Ліворуч (-90°)"
+
+#: ../prefs.js:159
+msgid "Overscan Mode"
+msgstr "Режим Overscan"
+
+#: ../prefs.js:160
+msgid "Disable Video (Audio Only)"
+msgstr "Вимкнути відео (Лише аудіо)"
+
+#: ../prefs.js:161
+msgid "Keep Window Open on Exit"
+msgstr "Не закривати вікно при виході"
+
+#: ../prefs.js:162
+msgid "Screensaver Override"
+msgstr "Перевизначення заставки"
+
+#: ../prefs.js:162
+msgid "Default"
+msgstr "За замовчуванням"
+
+#: ../prefs.js:162
+msgid "On during active mirroring"
+msgstr "Увімкнено під час трансляції"
+
+#: ../prefs.js:162
+msgid "Always on"
+msgstr "Завжди увімкнено"
+
+#: ../prefs.js:170
+msgid "Audio & HLS"
+msgstr "Аудіо та HLS"
+
+#: ../prefs.js:172
+msgid "Audio Synchronization"
+msgstr "Синхронізація аудіо"
+
+#: ../prefs.js:173
+msgid "Video Sync"
+msgstr "Синхронізація відео"
+
+#: ../prefs.js:174
+msgid "Async Audio (Audio-only)"
+msgstr "Асинхронне аудіо (Лише аудіо)"
+
+#: ../prefs.js:175
+msgid "Audio Latency"
+msgstr "Затримка аудіо"
+
+#: ../prefs.js:180
+msgid "Volume Control"
+msgstr "Контроль гучності"
+
+#: ../prefs.js:181
+msgid "Volume Multiplier"
+msgstr "Множник гучності"
+
+#: ../prefs.js:181
+msgid "Does not affect source device volume"
+msgstr "Не впливає на гучність джерела"
+
+#: ../prefs.js:184
+msgid "Decibel Limits (l:h)"
+msgstr "Ліміти децибелів (l:h)"
+
+#: ../prefs.js:185
+msgid "Logarithmic Taper"
+msgstr "Логарифмічне згасання (Taper)"
+
+#: ../prefs.js:188
+msgid "Metadata Extraction"
+msgstr "Отримання метаданих"
+
+#: ../prefs.js:189
+msgid "Cover Art Dump Path"
+msgstr "Шлях збереження обкладинок"
+
+#: ../prefs.js:190
+msgid "Metadata Dump Path"
+msgstr "Шлях збереження метаданих"
+
+#: ../prefs.js:191
+msgid "DACP Telemetry Path"
+msgstr "Шлях телеметрії DACP"
+
+#: ../prefs.js:194
+msgid "HTTP Live Streaming (HLS)"
+msgstr "HTTP Live Streaming (HLS)"
+
+#: ../prefs.js:195
+msgid "Enable HLS Interception"
+msgstr "Увімкнути перехоплення HLS"
+
+#: ../prefs.js:196
+msgid "Language Code"
+msgstr "Код мови"
+
+#: ../prefs.js:204
+msgid "Advanced"
+msgstr "Розширені"
+
+#: ../prefs.js:207
+msgid "Configuration File"
+msgstr "Конфігураційний файл"
+
+#: ../prefs.js:208
+msgid ""
+"UXPlay Control stores runtime settings in a dedicated file.\n"
+"Path: ~/.config/uxplay-control/uxplayrc\n"
+"Changes made here are automatically synced to this file."
+msgstr ""
+"UXPlay Control зберігає налаштування у файлі.\n"
+"Шлях: ~/.config/uxplay-control/uxplayrc\n"
+"Зміни тут автоматично синхронізуються з цим файлом."
+
+#: ../prefs.js:212
+msgid "GStreamer Pipeline"
+msgstr "Конвеєр GStreamer"
+
+#: ../prefs.js:213
+msgid "Parser Element"
+msgstr "Елемент Парсера"
+
+#: ../prefs.js:214
+msgid "Decoder Element"
+msgstr "Елемент Декодера"
+
+#: ../prefs.js:215
+msgid "Converter Element"
+msgstr "Елемент Конвертера"
+
+#: ../prefs.js:216
+msgid "Video Sink"
+msgstr "Відео Sink"
+
+#: ../prefs.js:217
+msgid "Audio Sink"
+msgstr "Аудіо Sink"
+
+#: ../prefs.js:218
+msgid "Force SW Decode"
+msgstr "Примусове програмне декодування"
+
+#: ../prefs.js:219
+msgid "Prioritize Video4Linux2"
+msgstr "Пріоритет Video4Linux2"
+
+#: ../prefs.js:220
+msgid "Color Space Matrix"
+msgstr "Матриця кольорового простору"
+
+#: ../prefs.js:220
+msgid "Auto"
+msgstr "Автоматично"
+
+#: ../prefs.js:220
+msgid "BT.709"
+msgstr ""
+
+#: ../prefs.js:220
+msgid "sRGB"
+msgstr ""
+
+#: ../prefs.js:223
+msgid "Stream Exports & Muxing"
+msgstr "Експорт потоку та Muxing"
+
+#: ../prefs.js:224
+msgid "RTP Video Pipeline"
+msgstr "Конвеєр RTP Відео"
+
+#: ../prefs.js:225
+msgid "RTP Audio Pipeline"
+msgstr "Конвеєр RTP Аудіо"
+
+#: ../prefs.js:226
+msgid "Encode to MP4"
+msgstr "Кодувати у MP4"
+
+#: ../prefs.js:229
+msgid "Diagnostics & Timeouts"
+msgstr "Діагностика та тайм-аути"
+
+#: ../prefs.js:230
+msgid "Print FPS Telemetry"
+msgstr "Показувати телеметрію FPS"
+
+#: ../prefs.js:231
+msgid "Video Dump Path"
+msgstr "Шлях збереження дампу відео"
+
+#: ../prefs.js:232
+msgid "Audio Dump Path"
+msgstr "Шлях збереження дампу аудіо"
+
+#: ../prefs.js:233
+msgid "Reset Timeout"
+msgstr "Тайм-аут скидання"
+
+#: ../prefs.js:236
+msgid "Debug Logging"
+msgstr "Логування налагодження"
+
+#: ../prefs.js:244
+msgid "Logs"
+msgstr "Журнали"
+
+#: ../prefs.js:245
+msgid "Application Logs"
+msgstr "Журнали розширення"
+
+#: ../prefs.js:251
+msgid "Log Management"
+msgstr "Управління журналами"
+
+#: ../prefs.js:252
+msgid "Maximum Log Lines"
+msgstr "Максимальна кількість рядків"
+
+#: ../prefs.js:256
+msgid "Clear All Stored Logs"
+msgstr "Очистити всі збережені журнали"
+
+#: ../prefs.js:257
+msgid "Clear"
+msgstr "Очистити"
+
+#: ../prefs.js:267
+msgid "About"
+msgstr "Про розширення"
+
+#: ../prefs.js:269
+msgid "Extension Information"
+msgstr "Інформація про розширення"
+
+#: ../prefs.js:271
+msgid "Name"
+msgstr "Назва"
+
+#: ../prefs.js:272
+msgid "Description"
+msgstr "Опис"
+
+#: ../prefs.js:273
+msgid "Version"
+msgstr "Версія"
+
+#: ../prefs.js:274
+msgid "UUID"
+msgstr "UUID"
+
+#: ../prefs.js:275
+msgid "Supported GNOME Versions"
+msgstr "Підтримувані версії GNOME"
+
+#: ../prefs.js:278
+msgid "Homepage"
+msgstr "Домашня сторінка"
+
+#: ../prefs.js:279
+msgid "Open"
+msgstr ""
+
+#: ../prefs.js:285
+msgid "Developer Information"
+msgstr "Інформація про розробника"
+
+#: ../prefs.js:303
+msgid "xxanqw"
+msgstr ""
+
+#: ../prefs.js:307
+msgid "smol ukrainian dev🤫"
+msgstr ""
+
+#: ../prefs.js:311
+msgid "PayPal: travix10x@icloud.com"
+msgstr ""
+
+#: ../prefs.js:313
+msgid "Support via Bank"
+msgstr "Підтримати (Банк)"
+
+#: ../prefs.js:316
+msgid "Project GitHub"
+msgstr "Проєкт на GitHub"
+
+#: ../prefs.js:332 ../prefs.js:335
+msgid "UXPlay Not Found"
+msgstr ""
+
+msgid "Internal schema version for migration tracking"
+msgstr "Внутрішня версія схеми для відстеження міграції"
+
+msgid "AirPlay server name"
+msgstr "Ім'я сервера AirPlay"
+
+msgid "Do not add hostname suffix"
+msgstr "Не додавати суфікс імені хоста"
+
+msgid "Hardcoded MAC address (Device ID)"
+msgstr "Фіксована MAC-адреса (ID пристрою)"
+
+msgid "Bind to legacy AirPlay static ports"
+msgstr "Прив'язати до застарілих статичних портів AirPlay"
+
+msgid "Use custom port configuration"
+msgstr "Використовувати власні налаштування портів"
+
+msgid "Port configuration string (n or n1,n2,n3)"
+msgstr "Рядок налаштування портів (n або n1,n2,n3)"
+
+msgid "Bluetooth Low Energy beacon path"
+msgstr "Шлях до маяка Bluetooth Low Energy"
+
+msgid "Security mode for access control (Empty values have no effect)"
+msgstr "Режим безпеки для контролю доступу (Порожні значення не мають ефекту)"
+
+msgid "4-digit PIN code"
+msgstr "4-значний PIN-код"
+
+msgid "Password for access control"
+msgstr "Пароль для контролю доступу"
+
+msgid "Client registry file path"
+msgstr "Шлях до файлу реєстру клієнтів"
+
+msgid "Whitelist mode (drop unknown TCP connections)"
+msgstr "Режим білого списку (відкидати невідомі TCP-з'єднання)"
+
+msgid "Whitelisted client device IDs (comma-separated)"
+msgstr "Дозволені ID пристроїв клієнтів (через кому)"
+
+msgid "Blacklisted client device IDs (comma-separated)"
+msgstr "Заблоковані ID пристроїв клієнтів (через кому)"
+
+msgid "Drop active connection when a new client connects"
+msgstr "Розірвати активне з'єднання при підключенні нового клієнта"
+
+msgid "Clear final frozen video frame on reset"
+msgstr "Очистити останній завислий кадр відео при скиданні"
+
+msgid "Custom private cryptographic key file path"
+msgstr "Шлях до власного приватного криптографічного ключа"
+
+msgid "Resolution preset selection"
+msgstr "Вибір шаблону роздільної здатності"
+
+msgid "Custom resolution string"
+msgstr "Власний рядок роздільної здатності"
+
+msgid "Enable H265 support (scales to 4K)"
+msgstr "Увімкнути підтримку H265 (масштабується до 4K)"
+
+msgid "Maximum allowable framerate (0 = unlimited)"
+msgstr "Максимально допустима частота кадрів (0 = без обмежень)"
+
+msgid "Start in fullscreen mode"
+msgstr "Запускати в повноекранному режимі"
+
+msgid "Buffer flips (0: None, 1: Horizontal, 2: Vertical, 3: Inversion)"
+msgstr ""
+"Перевертання буфера (0: Немає, 1: Горизонтальне, 2: Вертикальне, 3: "
+"Інверсія)"
+
+msgid "Rotation matrix (0: None, 1: Right, 2: Left)"
+msgstr "Матриця обертання (0: Немає, 1: Вправо, 2: Вліво)"
+
+msgid "Enable overscanned mode"
+msgstr "Увімкнути режим overscan"
+
+msgid "Disable video display window entirely"
+msgstr "Повністю вимкнути вікно відображення відео"
+
+msgid "Keep video window open after session terminates"
+msgstr "Залишати вікно відео відкритим після завершення сесії"
+
+msgid "Host screensaver behavior (0: default, 1: on active, 2: always on)"
+msgstr ""
+"Поведінка заставки хоста (0: за замовчуванням, 1: під час активності, 2: "
+"завжди)"
+
+msgid "Video sync enabled (timestamp synchronization)"
+msgstr "Синхронізація відео увімкнена (синхронізація за часовими мітками)"
+
+msgid "Synchronize server audio to client video in audio-only mode"
+msgstr "Синхронізувати аудіо сервера з відео клієнта в режимі 'тільки аудіо'"
+
+msgid "Audio latency in seconds"
+msgstr "Затримка аудіо в секундах"
+
+msgid "Baseline volume multiplier (0.0 to 1.0)"
+msgstr "Базовий множник гучності (від 0.0 до 1.0)"
+
+msgid "Decibel attenuation limits (l or l:h)"
+msgstr "Межі ослаблення в децибелах (l або l:h)"
+
+msgid "Logarithmic volume control curve"
+msgstr "Логарифмічна крива керування гучністю"
+
+msgid "Cover art render or dump file path"
+msgstr "Шлях до файлу рендеру або дампу обкладинки"
+
+msgid "Metadata dump file path"
+msgstr "Шлях до файлу дампу метаданих"
+
+msgid "DACP telemetry export path"
+msgstr "Шлях експорту телеметрії DACP"
+
+msgid "Enable direct HTTP Live Streaming interception"
+msgstr "Увімкнути пряме перехоплення HTTP Live Streaming"
+
+msgid "Specific linguistic audio track selection"
+msgstr "Вибір конкретної мовної аудіодоріжки"
+
+msgid "Exact GStreamer parser element"
+msgstr "Точний елемент парсера GStreamer"
+
+msgid "Exact GStreamer algorithmic decoder element"
+msgstr "Точний алгоритмічний елемент декодера GStreamer"
+
+msgid "GStreamer conversion algorithm"
+msgstr "Алгоритм конвертації GStreamer"
+
+msgid "Decoded video buffer sink endpoint"
+msgstr "Кінцева точка для декодованого відеобуфера"
+
+msgid "Decoded audio buffer sink endpoint"
+msgstr "Кінцева точка для декодованого аудіобуфера"
+
+msgid "Override hardware acceleration (libav CPU decode)"
+msgstr "Перевизначити апаратне прискорення (декодування libav CPU)"
+
+msgid "Prioritize Video4Linux2 hardware decoding"
+msgstr "Надавати пріоритет апаратному декодуванню Video4Linux2"
+
+msgid "Color space matrix (0: auto, 1: bt709, 2: srgb)"
+msgstr "Матриця кольорового простору (0: auto, 1: bt709, 2: srgb)"
+
+msgid "RTP video forward pipeline"
+msgstr "Конвеєр пересилання RTP відео"
+
+msgid "RTP audio forward pipeline"
+msgstr "Конвеєр пересилання RTP аудіо"
+
+msgid "Bypass rendering and encode to .mp4 file"
+msgstr "Обійти рендеринг і кодувати у файл .mp4"
+
+msgid "Print real-time client performance telemetry"
+msgstr "Виводити телеметрію продуктивності клієнта в реальному часі"
+
+msgid "Dump H.264 NAL units (binary file)"
+msgstr "Зберегти дамп NAL одиниць H.264 (бінарний файл)"
+
+msgid "Dump uncompressed or ALAC packets (binary file)"
+msgstr "Зберегти дамп нестиснутих або ALAC пакетів (бінарний файл)"
+
+msgid "Reset timeout in seconds"
+msgstr "Тайм-аут скидання в секундах"
+
+msgid "Enable debug logging"
+msgstr "Увімкнути логування налагодження"
+
+msgid "Stores UXPlay log messages"
+msgstr "Зберігає повідомлення журналу UXPlay"
+
+msgid "Maximum number of log lines to store"
+msgstr "Максимальна кількість рядків журналу для зберігання"

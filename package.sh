@@ -15,6 +15,15 @@ if [ "$(ls -1t *.zip 2>/dev/null | head -n 1)" ]; then
     rm *.zip
 fi
 
+
+# Compile locales
+echo -e "\033[1;32m→ Compiling locales\033[0m"
+for po in po/*.po; do
+    lang=$(basename "$po" .po)
+    mkdir -p "locale/$lang/LC_MESSAGES"
+    msgfmt "$po" -o "locale/$lang/LC_MESSAGES/uxplay-control.mo"
+done
+
 # Compile schemas
 echo -e "\033[1;32m→ Compiling schemas\033[0m"
 glib-compile-schemas schemas/

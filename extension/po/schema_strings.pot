@@ -1,0 +1,266 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-20 12:12+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:6
+msgid "Internal schema version for migration tracking"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:7
+msgid ""
+"Tracks the configuration schema version. Used to detect and handle breaking "
+"upgrades automatically. Do not edit manually."
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:13
+msgid "AirPlay server name"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:17
+msgid "Do not add hostname suffix"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:21
+msgid "Hardcoded MAC address (Device ID)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:25
+msgid "Bind to legacy AirPlay static ports"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:29
+msgid "Use custom port configuration"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:33
+msgid "Port configuration string (n or n1,n2,n3)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:37
+msgid "Bluetooth Low Energy beacon path"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:43
+msgid "Security mode for access control (Empty values have no effect)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:47
+msgid "4-digit PIN code"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:51
+msgid "Password for access control"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:55
+msgid "Client registry file path"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:59
+msgid "Whitelist mode (drop unknown TCP connections)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:63
+msgid "Whitelisted client device IDs (comma-separated)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:67
+msgid "Blacklisted client device IDs (comma-separated)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:71
+msgid "Drop active connection when a new client connects"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:75
+msgid "Clear final frozen video frame on reset"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:79
+msgid "Custom private cryptographic key file path"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:85
+msgid "Resolution preset selection"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:89
+msgid "Custom resolution string"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:93
+msgid "Enable H265 support (scales to 4K)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:97
+msgid "Maximum allowable framerate (0 = unlimited)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:101
+msgid "Start in fullscreen mode"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:105
+msgid "Buffer flips (0: None, 1: Horizontal, 2: Vertical, 3: Inversion)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:109
+msgid "Rotation matrix (0: None, 1: Right, 2: Left)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:113
+msgid "Enable overscanned mode"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:117
+msgid "Disable video display window entirely"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:121
+msgid "Keep video window open after session terminates"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:125
+msgid "Host screensaver behavior (0: default, 1: on active, 2: always on)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:131
+msgid "Video sync enabled (timestamp synchronization)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:135
+msgid "Synchronize server audio to client video in audio-only mode"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:139
+msgid "Audio latency in seconds"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:143
+msgid "Baseline volume multiplier (0.0 to 1.0)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:147
+msgid "Decibel attenuation limits (l or l:h)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:151
+msgid "Logarithmic volume control curve"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:155
+msgid "Cover art render or dump file path"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:159
+msgid "Metadata dump file path"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:163
+msgid "DACP telemetry export path"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:169
+msgid "Enable direct HTTP Live Streaming interception"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:173
+msgid "Specific linguistic audio track selection"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:179
+msgid "Exact GStreamer parser element"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:183
+msgid "Exact GStreamer algorithmic decoder element"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:187
+msgid "GStreamer conversion algorithm"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:191
+msgid "Decoded video buffer sink endpoint"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:195
+msgid "Decoded audio buffer sink endpoint"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:199
+msgid "Override hardware acceleration (libav CPU decode)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:203
+msgid "Prioritize Video4Linux2 hardware decoding"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:207
+msgid "Color space matrix (0: auto, 1: bt709, 2: srgb)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:213
+msgid "RTP video forward pipeline"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:217
+msgid "RTP audio forward pipeline"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:221
+msgid "Bypass rendering and encode to .mp4 file"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:227
+msgid "Print real-time client performance telemetry"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:231
+msgid "Dump H.264 NAL units (binary file)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:235
+msgid "Dump uncompressed or ALAC packets (binary file)"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:239
+msgid "Reset timeout in seconds"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:243
+msgid "Enable debug logging"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:249
+msgid "Stores UXPlay log messages"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:250
+msgid "An array of strings, each representing a log line."
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:254
+msgid "Maximum number of log lines to store"
+msgstr ""
+
+#: ../schemas/org.gnome.shell.extensions.uxplay-control.gschema.xml:255
+msgid ""
+"Defines the maximum number of log lines to keep in GSettings. Oldest lines "
+"are removed first. Higher values may impact performance."
+msgstr ""
