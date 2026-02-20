@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist>
+<schemalist gettext-domain="uxplay-control">
   <schema id="org.gnome.shell.extensions.uxplay-control" path="/org/gnome/shell/extensions/uxplay-control/">
+    <key name="schema-version" type="i">
+      <default>0</default>
+      <summary>Internal schema version for migration tracking</summary>
+      <description>Tracks the configuration schema version. Used to detect and handle breaking upgrades automatically. Do not edit manually.</description>
+    </key>
+
+    <!-- Network / Server Identity -->
     <key name="server-name" type="s">
       <default>'UXPlay-GNOME'</default>
       <summary>AirPlay server name</summary>
@@ -9,7 +16,28 @@
       <default>false</default>
       <summary>Do not add hostname suffix</summary>
     </key>
-    
+    <key name="mac-address" type="s">
+      <default>''</default>
+      <summary>Hardcoded MAC address (Device ID)</summary>
+    </key>
+    <key name="legacy-ports" type="b">
+      <default>false</default>
+      <summary>Bind to legacy AirPlay static ports</summary>
+    </key>
+    <key name="use-custom-ports" type="b">
+      <default>false</default>
+      <summary>Use custom port configuration</summary>
+    </key>
+    <key name="port-config" type="s">
+      <default>''</default>
+      <summary>Port configuration string (n or n1,n2,n3)</summary>
+    </key>
+    <key name="ble-beacon" type="s">
+      <default>''</default>
+      <summary>Bluetooth Low Energy beacon path</summary>
+    </key>
+
+    <!-- Security & Access Control -->
     <key name="security-mode" type="i">
       <default>0</default>
       <summary>Security mode for access control (Empty values have no effect)</summary>
@@ -22,11 +50,36 @@
       <default>''</default>
       <summary>Password for access control</summary>
     </key>
-    
-    <key name="h265" type="b">
-      <default>false</default>
-      <summary>Enable H265 support</summary>
+    <key name="client-registry" type="s">
+      <default>''</default>
+      <summary>Client registry file path</summary>
     </key>
+    <key name="restrict-mode" type="b">
+      <default>false</default>
+      <summary>Whitelist mode (drop unknown TCP connections)</summary>
+    </key>
+    <key name="allowed-devices" type="s">
+      <default>''</default>
+      <summary>Whitelisted client device IDs (comma-separated)</summary>
+    </key>
+    <key name="blocked-devices" type="s">
+      <default>''</default>
+      <summary>Blacklisted client device IDs (comma-separated)</summary>
+    </key>
+    <key name="no-hold" type="b">
+      <default>false</default>
+      <summary>Drop active connection when a new client connects</summary>
+    </key>
+    <key name="no-freeze" type="b">
+      <default>false</default>
+      <summary>Clear final frozen video frame on reset</summary>
+    </key>
+    <key name="custom-key-path" type="s">
+      <default>''</default>
+      <summary>Custom private cryptographic key file path</summary>
+    </key>
+
+    <!-- Video Geometry & Rendering -->
     <key name="resolution-preset" type="i">
       <default>0</default>
       <summary>Resolution preset selection</summary>
@@ -35,32 +88,151 @@
       <default>'1920x1080@60'</default>
       <summary>Custom resolution string</summary>
     </key>
+    <key name="h265" type="b">
+      <default>false</default>
+      <summary>Enable H265 support (scales to 4K)</summary>
+    </key>
+    <key name="fps-limit" type="i">
+      <default>0</default>
+      <summary>Maximum allowable framerate (0 = unlimited)</summary>
+    </key>
     <key name="fullscreen" type="b">
       <default>false</default>
       <summary>Start in fullscreen mode</summary>
     </key>
-    
+    <key name="video-flip" type="i">
+      <default>0</default>
+      <summary>Buffer flips (0: None, 1: Horizontal, 2: Vertical, 3: Inversion)</summary>
+    </key>
+    <key name="video-rotation" type="i">
+      <default>0</default>
+      <summary>Rotation matrix (0: None, 1: Right, 2: Left)</summary>
+    </key>
+    <key name="overscan" type="b">
+      <default>false</default>
+      <summary>Enable overscanned mode</summary>
+    </key>
+    <key name="disable-video" type="b">
+      <default>false</default>
+      <summary>Disable video display window entirely</summary>
+    </key>
+    <key name="no-close-window" type="b">
+      <default>false</default>
+      <summary>Keep video window open after session terminates</summary>
+    </key>
+    <key name="screensaver" type="i">
+      <default>0</default>
+      <summary>Host screensaver behavior (0: default, 1: on active, 2: always on)</summary>
+    </key>
+
+    <!-- Audio -->
     <key name="vsync" type="b">
       <default>true</default>
-      <summary>Video sync enabled</summary>
+      <summary>Video sync enabled (timestamp synchronization)</summary>
+    </key>
+    <key name="async-audio" type="b">
+      <default>false</default>
+      <summary>Synchronize server audio to client video in audio-only mode</summary>
     </key>
     <key name="audio-latency" type="d">
-      <default>0.00</default>
+      <default>0.25</default>
       <summary>Audio latency in seconds</summary>
     </key>
     <key name="initial-volume" type="d">
       <default>1.0</default>
-      <summary>UXPlay Volume (requires PulseAudio)</summary>
-      <description>Controls the output volume (0.0-1.0) from UXPlay. This does not affect the source device's volume. Using this setting forces the use of "pulsesink" as the GStreamer audio sink. The default is 1.0 (no change).</description>
+      <summary>Baseline volume multiplier (0.0 to 1.0)</summary>
     </key>
-    
-    <key name="use-custom-ports" type="b">
-      <default>false</default>
-      <summary>Use custom port configuration</summary>
-    </key>
-    <key name="port-config" type="s">
+    <key name="db-limits" type="s">
       <default>''</default>
-      <summary>Port configuration string</summary>
+      <summary>Decibel attenuation limits (l or l:h)</summary>
+    </key>
+    <key name="taper-volume" type="b">
+      <default>false</default>
+      <summary>Logarithmic volume control curve</summary>
+    </key>
+    <key name="cover-art-path" type="s">
+      <default>''</default>
+      <summary>Cover art render or dump file path</summary>
+    </key>
+    <key name="metadata-path" type="s">
+      <default>''</default>
+      <summary>Metadata dump file path</summary>
+    </key>
+    <key name="dacp-path" type="s">
+      <default>''</default>
+      <summary>DACP telemetry export path</summary>
+    </key>
+
+    <!-- HLS -->
+    <key name="hls-support" type="b">
+      <default>false</default>
+      <summary>Enable direct HTTP Live Streaming interception</summary>
+    </key>
+    <key name="hls-lang" type="s">
+      <default>''</default>
+      <summary>Specific linguistic audio track selection</summary>
+    </key>
+
+    <!-- GStreamer Advanced -->
+    <key name="gst-parser" type="s">
+      <default>''</default>
+      <summary>Exact GStreamer parser element</summary>
+    </key>
+    <key name="gst-decoder" type="s">
+      <default>''</default>
+      <summary>Exact GStreamer algorithmic decoder element</summary>
+    </key>
+    <key name="gst-converter" type="s">
+      <default>''</default>
+      <summary>GStreamer conversion algorithm</summary>
+    </key>
+    <key name="gst-video-sink" type="s">
+      <default>''</default>
+      <summary>Decoded video buffer sink endpoint</summary>
+    </key>
+    <key name="gst-audio-sink" type="s">
+      <default>''</default>
+      <summary>Decoded audio buffer sink endpoint</summary>
+    </key>
+    <key name="force-sw-decode" type="b">
+      <default>false</default>
+      <summary>Override hardware acceleration (libav CPU decode)</summary>
+    </key>
+    <key name="force-v4l2" type="b">
+      <default>false</default>
+      <summary>Prioritize Video4Linux2 hardware decoding</summary>
+    </key>
+    <key name="color-space" type="i">
+      <default>0</default>
+      <summary>Color space matrix (0: auto, 1: bt709, 2: srgb)</summary>
+    </key>
+
+    <!-- RTP / Muxing -->
+    <key name="vrtp-pipeline" type="s">
+      <default>''</default>
+      <summary>RTP video forward pipeline</summary>
+    </key>
+    <key name="artp-pipeline" type="s">
+      <default>''</default>
+      <summary>RTP audio forward pipeline</summary>
+    </key>
+    <key name="mp4-path" type="s">
+      <default>''</default>
+      <summary>Bypass rendering and encode to .mp4 file</summary>
+    </key>
+
+    <!-- Telemetry -->
+    <key name="fps-data" type="b">
+      <default>false</default>
+      <summary>Print real-time client performance telemetry</summary>
+    </key>
+    <key name="video-dump-path" type="s">
+      <default>''</default>
+      <summary>Dump H.264 NAL units (binary file)</summary>
+    </key>
+    <key name="audio-dump-path" type="s">
+      <default>''</default>
+      <summary>Dump uncompressed or ALAC packets (binary file)</summary>
     </key>
     <key name="reset-timeout" type="i">
       <default>15</default>
@@ -68,9 +240,10 @@
     </key>
     <key name="debug" type="b">
       <default>false</default>
-      <summary>Enable debug logging (Logs panel will die &amp;lt;3) </summary>
+      <summary>Enable debug logging</summary>
     </key>
 
+    <!-- Log Management -->
     <key name="uxplay-logs" type="as">
       <default>[]</default>
       <summary>Stores UXPlay log messages</summary>

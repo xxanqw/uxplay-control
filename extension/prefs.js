@@ -4,7 +4,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gdk from 'gi://Gdk';
 import GdkPixbuf from 'gi://GdkPixbuf';
-import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 export default class UXPlayControlPreferences extends ExtensionPreferences {
     constructor(metadata) {
@@ -13,27 +13,16 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
 
     fillPreferencesWindow(window) {
         const isUxPlayAvailable = !!GLib.find_program_in_path('uxplay');
-
         const settings = this.getSettings();
 
         if (!settings) {
-            console.error("UXPlayControlPreferences: GSettings could not be initialized by ExtensionPreferences.");
-            const errorPage = new Adw.PreferencesPage({
-                title: 'Error',
-                icon_name: 'dialog-error-symbolic'
-            });
+            const errorPage = new Adw.PreferencesPage({ title: _('Error'), icon_name: 'dialog-error-symbolic' });
             const errorGroup = new Adw.PreferencesGroup();
-            const errorLabel = new Gtk.Label({
-                label: "Error: Could not load extension settings.\nPlease ensure the GSettings schema is correctly installed and compiled, and that the extension has been reloaded.",
-                wrap: true,
-                justify: Gtk.Justification.CENTER
-            });
-            errorGroup.add(errorLabel);
+            errorGroup.add(new Gtk.Label({ label: "Error: Could not load extension settings.", wrap: true, justify: Gtk.Justification.CENTER }));
             errorPage.add(errorGroup);
             window.add(errorPage);
             return;
         }
-        console.log('UXPlayControlPreferences: Successfully obtained GSettings object.');
 
         try {
             const cssProvider = new Gtk.CssProvider();
@@ -41,431 +30,273 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
             if (basePath) {
                 const cssPath = GLib.build_filenamev([basePath, 'stylesheet.css']);
                 cssProvider.load_from_file(Gio.File.new_for_path(cssPath));
-                Gtk.StyleContext.add_provider_for_display(
-                    Gdk.Display.get_default(),
-                    cssProvider,
-                    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-                );
+                Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), cssProvider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
             }
-        } catch (e) {
-            console.log('Failed to load preferences CSS:', e);
-        }
+        } catch (e) {}
 
         const getSummary = (key, defaultSubtitle = '') => {
-            if (!settings || !settings.settings_schema) {
-                return defaultSubtitle;
-            }
+            if (!settings || !settings.settings_schema) return defaultSubtitle;
             const schemaKey = settings.settings_schema.get_key(key);
             if (schemaKey) {
                 const summary = schemaKey.get_summary();
-                if (summary && summary.length > 0) {
-                    return summary;
-                }
+                if (summary && summary.length > 0) return summary;
             }
             return defaultSubtitle;
         };
 
-        const generalPage = new Adw.PreferencesPage({
-            title: 'General',
-            icon_name: 'preferences-system-symbolic'
-        });
+        const addTextRow = (group, title, key, subtitle = '') => {
+            const row = new Adw.EntryRow({ title: title, text: settings.get_string(key) });
+            if (subtitle) row.set_subtitle(subtitle);
+            row.connect('changed', () => settings.set_string(key, row.text));
+            group.add(row);
+            return row;
+        };
 
-        const serverGroup = new Adw.PreferencesGroup({
-            title: 'Server Settings'
-        });
+        const addSwitchRow = (group, title, key, subtitle = '') => {
+            const row = new Adw.SwitchRow({ title: title, subtitle: subtitle || getSummary(key) });
+            settings.bind(key, row, 'active', Gio.SettingsBindFlags.DEFAULT);
+            group.add(row);
+            return row;
+        };
 
-        const nameRow = new Adw.EntryRow({
-            title: 'Server Name',
-            text: settings.get_string('server-name')
-        });
-        nameRow.connect('changed', () => {
-            settings.set_string('server-name', nameRow.text);
-        });
+        const addComboRow = (group, title, key, options) => {
+            const model = new Gtk.StringList();
+            options.forEach(opt => model.append(opt));
+            const row = new Adw.ComboRow({ title: title, subtitle: getSummary(key), model: model });
+            row.set_selected(settings.get_int(key));
+            row.connect('notify::selected', () => settings.set_int(key, row.selected));
+            group.add(row);
+            return row;
+        };
 
-        const noHostnameRow = new Adw.SwitchRow({
-            title: 'No Hostname Suffix',
-            subtitle: getSummary('no-hostname', 'Do not add "@hostname" to server name')
-        });
-        settings.bind('no-hostname', noHostnameRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        const addDocLink = (page, title, url) => {
+            const docGroup = new Adw.PreferencesGroup();
+            const docRow = new Adw.ActionRow({ title: title, subtitle: url });
+            const linkBtn = new Gtk.LinkButton({ label: _('Open Docs'), uri: url });
+            docRow.add_suffix(linkBtn);
+            docRow.set_activatable_widget(linkBtn);
+            docGroup.add(docRow);
+            page.add(docGroup);
+        };
 
-        serverGroup.add(nameRow);
-        serverGroup.add(noHostnameRow);
-        generalPage.add(serverGroup);
+        const serverPage = new Adw.PreferencesPage({ title: _('Server & Security'), icon_name: 'network-server-symbolic' });
 
-        const securityGroup = new Adw.PreferencesGroup({
-            title: 'Security Settings'
-        });
+        const identityGroup = new Adw.PreferencesGroup({ title: _('Server Identity') });
+        addTextRow(identityGroup, _('Server Name'), 'server-name');
+        addSwitchRow(identityGroup, _('No Hostname Suffix'), 'no-hostname');
+        addTextRow(identityGroup, _('MAC Address (Device ID)'), 'mac-address');
+        addTextRow(identityGroup, _('BLE Beacon File'), 'ble-beacon');
+        serverPage.add(identityGroup);
 
-        const securityModel = new Gtk.StringList();
-        securityModel.append('None');
-        securityModel.append('PIN Code');
-        securityModel.append('Password');
+        const networkGroup = new Adw.PreferencesGroup({ title: _('Network & Ports') });
+        addSwitchRow(networkGroup, _('Legacy AirPlay Ports'), 'legacy-ports');
+        const customPortsRow = addSwitchRow(networkGroup, _('Use Custom Ports'), 'use-custom-ports');
+        const portsRow = addTextRow(networkGroup, _('Port Configuration'), 'port-config');
+        customPortsRow.connect('notify::active', () => portsRow.set_sensitive(customPortsRow.active));
+        portsRow.set_sensitive(customPortsRow.active);
+        serverPage.add(networkGroup);
 
-        const securityModeRow = new Adw.ComboRow({
-            title: 'Security Mode',
-            subtitle: getSummary('security-mode', 'Select the security mode for the server'),
-            model: securityModel,
-        });
+        const securityGroup = new Adw.PreferencesGroup({ title: _('Security Settings') });
+        const secModel = new Gtk.StringList(); [_('None'), _('PIN Code'), _('Password')].forEach(i => secModel.append(i));
+        const securityModeRow = new Adw.ComboRow({ title: _('Security Mode'), subtitle: getSummary('security-mode'), model: secModel });
         settings.bind('security-mode', securityModeRow, 'selected', Gio.SettingsBindFlags.DEFAULT);
+        securityGroup.add(securityModeRow);
 
-        const pinCodeRow = new Adw.EntryRow({
-            title: 'PIN Code (4-digit)',
-            text: settings.get_string('pin-code'),
-            visible: settings.get_int('security-mode') === 1
-        });
-
-        const passwordRow = new Adw.EntryRow({
-            title: 'Password',
-            text: settings.get_string('password'),
-            visible: settings.get_int('security-mode') === 2
-        });
-
+        const pinCodeRow = new Adw.EntryRow({ title: _('PIN Code (4-digit)'), text: settings.get_string('pin-code'), visible: settings.get_int('security-mode') === 1 });
+        const passwordRow = new Adw.EntryRow({ title: _('Password'), text: settings.get_string('password'), visible: settings.get_int('security-mode') === 2 });
         securityModeRow.connect('notify::selected', () => {
-            const selected = securityModeRow.selected;
-            pinCodeRow.visible = (selected === 1);
-            passwordRow.visible = (selected === 2);
+            pinCodeRow.visible = (securityModeRow.selected === 1);
+            passwordRow.visible = (securityModeRow.selected === 2);
         });
-
         pinCodeRow.connect('changed', entry => {
-            const text = entry.get_text();
-            const sanitized = text.replace(/\D/g, '').substring(0, 4);
-
-            if (text !== sanitized) {
-                entry.set_text(sanitized);
-                entry.set_position(-1);
-            }
+            const sanitized = entry.get_text().replace(/\D/g, '').substring(0, 4);
+            if (entry.get_text() !== sanitized) { entry.set_text(sanitized); entry.set_position(-1); }
             settings.set_string('pin-code', sanitized);
         });
-
-        passwordRow.connect('changed', () => {
-            settings.set_string('password', passwordRow.text);
-        });
-
-        securityGroup.add(securityModeRow);
+        passwordRow.connect('changed', () => settings.set_string('password', passwordRow.text));
         securityGroup.add(pinCodeRow);
         securityGroup.add(passwordRow);
-        generalPage.add(securityGroup);
 
-        const videoPage = new Adw.PreferencesPage({
-            title: 'Video',
-            icon_name: 'video-display-symbolic'
-        });
+        addTextRow(securityGroup, _('Client Registry Path'), 'client-registry');
+        addTextRow(securityGroup, _('Custom Key Path'), 'custom-key-path');
+        serverPage.add(securityGroup);
 
-        const videoGroup = new Adw.PreferencesGroup({
-            title: 'Video Settings'
-        });
+        const restrictGroup = new Adw.PreferencesGroup({ title: _('Access Control') });
+        addSwitchRow(restrictGroup, _('Whitelist Mode (Restrict)'), 'restrict-mode');
+        addTextRow(restrictGroup, _('Allowed Devices (CSV)'), 'allowed-devices');
+        addTextRow(restrictGroup, _('Blocked Devices (CSV)'), 'blocked-devices');
+        addSwitchRow(restrictGroup, _('Drop on New Connection'), 'no-hold');
+        addSwitchRow(restrictGroup, _('Clear Frame on Reset'), 'no-freeze');
+        serverPage.add(restrictGroup);
+        
+        addDocLink(serverPage, _('Server and Security Documentation'), 'https://github.com/FDH2/UxPlay#usage');
 
-        const h265Row = new Adw.SwitchRow({
-            title: 'H265 Support',
-            subtitle: getSummary('h265', 'Enable 4K video support')
-        });
-        settings.bind('h265', h265Row, 'active', Gio.SettingsBindFlags.DEFAULT);
+        const videoPage = new Adw.PreferencesPage({ title: _('Video'), icon_name: 'video-display-symbolic' });
 
-        const resolutionRow = new Adw.ComboRow({
-            title: 'Resolution',
-            subtitle: getSummary('resolution-preset')
-        });
-        const resolutionModel = new Gtk.StringList();
-        resolutionModel.append('1920x1080@60');
-        resolutionModel.append('3840x2160@60');
-        resolutionModel.append('1280x720@60');
-        resolutionModel.append('Custom');
-        resolutionRow.set_model(resolutionModel);
-        resolutionRow.set_selected(settings.get_int('resolution-preset'));
-        resolutionRow.connect('notify::selected', () => {
-            settings.set_int('resolution-preset', resolutionRow.selected);
-        });
+        const displayGroup = new Adw.PreferencesGroup({ title: _('Display Settings') });
+        addSwitchRow(displayGroup, _('H265 Support'), 'h265');
+        const resOptions = [_('1920x1080@60 (16:9 Desktop)'), _('3840x2160@60 (4K 16:9 Desktop)'), _('1280x720@60 (HD 16:9 Desktop)'), _('1170x2532@60 (iPhone 12/13/14 Pro)'), _('1290x2796@60 (iPhone 14/15 Pro Max)'), _('1080x1920@60 (1080p Portrait)'), _('1920x1440@60 (4:3 iPad)'), _('2732x2048@60 (iPad Pro 12.9")'), _('Custom')];
+        const resolutionRow = addComboRow(displayGroup, _('Resolution'), 'resolution-preset', resOptions);
+        const customResRow = addTextRow(displayGroup, _('Custom Resolution'), 'custom-resolution');
+        customResRow.set_visible(settings.get_int('resolution-preset') === 8);
+        resolutionRow.connect('notify::selected', () => customResRow.set_visible(resolutionRow.selected === 8));
+        
+        const fpsRow = new Adw.SpinRow({ title: _('FPS Limit'), subtitle: _('0 = unlimited'), adjustment: new Gtk.Adjustment({ lower: 0, upper: 240, step_increment: 1, value: settings.get_int('fps-limit') }) });
+        fpsRow.connect('notify::value', () => settings.set_int('fps-limit', fpsRow.value));
+        displayGroup.add(fpsRow);
+        videoPage.add(displayGroup);
 
-        const customResRow = new Adw.EntryRow({
-            title: 'Custom Resolution',
-            text: settings.get_string('custom-resolution')
-        });
-        customResRow.connect('changed', () => {
-            settings.set_string('custom-resolution', customResRow.text);
-        });
+        const geomGroup = new Adw.PreferencesGroup({ title: _('Geometry & Windows') });
+        addSwitchRow(geomGroup, _('Fullscreen Mode'), 'fullscreen');
+        addComboRow(geomGroup, _('Video Flip'), 'video-flip', [_('None'), _('Horizontal'), _('Vertical'), _('Inversion')]);
+        addComboRow(geomGroup, _('Video Rotation'), 'video-rotation', [_('None'), _('Right (90°)'), _('Left (-90°)')]);
+        addSwitchRow(geomGroup, _('Overscan Mode'), 'overscan');
+        addSwitchRow(geomGroup, _('Disable Video (Audio Only)'), 'disable-video');
+        addSwitchRow(geomGroup, _('Keep Window Open on Exit'), 'no-close-window');
+        addComboRow(geomGroup, _('Screensaver Override'), 'screensaver', [_('Default'), _('On during active mirroring'), _('Always on')]);
+        videoPage.add(geomGroup);
 
-        const fullscreenRow = new Adw.SwitchRow({
-            title: 'Fullscreen Mode',
-            subtitle: getSummary('fullscreen')
-        });
-        settings.bind('fullscreen', fullscreenRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        addDocLink(videoPage, _('Video Documentation'), 'https://github.com/FDH2/UxPlay#video-and-audio-options');
 
-        videoGroup.add(h265Row);
-        videoGroup.add(resolutionRow);
-        videoGroup.add(customResRow);
-        videoGroup.add(fullscreenRow);
-        videoPage.add(videoGroup);
+        const audioPage = new Adw.PreferencesPage({ title: _('Audio & HLS'), icon_name: 'audio-volume-high-symbolic' });
 
-        const audioPage = new Adw.PreferencesPage({
-            title: 'Audio',
-            icon_name: 'audio-volume-high-symbolic'
-        });
-
-        const audioGroup = new Adw.PreferencesGroup({
-            title: 'Audio Settings'
-        });
-
-        const vsyncRow = new Adw.SwitchRow({
-            title: 'Video Sync',
-            subtitle: getSummary('vsync', 'Sync audio to video using timestamps')
-        });
-        settings.bind('vsync', vsyncRow, 'active', Gio.SettingsBindFlags.DEFAULT);
-
-        const latencyRow = new Adw.SpinRow({
-            title: 'Audio Latency (seconds)',
-            adjustment: new Gtk.Adjustment({
-                lower: 0.0,
-                upper: 2.0,
-                step_increment: 0.05,
-            }),
-            digits: 2
-        });
+        const audioSyncGroup = new Adw.PreferencesGroup({ title: _('Audio Synchronization') });
+        addSwitchRow(audioSyncGroup, _('Video Sync'), 'vsync');
+        addSwitchRow(audioSyncGroup, _('Async Audio (Audio-only)'), 'async-audio');
+        const latencyRow = new Adw.SpinRow({ title: _('Audio Latency'), digits: 2, adjustment: new Gtk.Adjustment({ lower: 0.0, upper: 2.0, step_increment: 0.05 }) });
         settings.bind('audio-latency', latencyRow.get_adjustment(), 'value', Gio.SettingsBindFlags.DEFAULT);
+        audioSyncGroup.add(latencyRow);
+        audioPage.add(audioSyncGroup);
 
-        const volumeRow = new Adw.SpinRow({
-            title: 'UXPlay Volume',
-            subtitle: 'Controls the output volume from UXPlay. Does not affect the source device\'s volume.',
-            adjustment: new Gtk.Adjustment({
-                lower: 0.0,
-                upper: 1.0,
-                step_increment: 0.1,
-            }),
-            digits: 1
-        });
+        const volumeGroup = new Adw.PreferencesGroup({ title: _('Volume Control') });
+        const volumeRow = new Adw.SpinRow({ title: _('Volume Multiplier'), subtitle: _('Does not affect source device volume'), digits: 1, adjustment: new Gtk.Adjustment({ lower: 0.0, upper: 1.0, step_increment: 0.1 }) });
         settings.bind('initial-volume', volumeRow.get_adjustment(), 'value', Gio.SettingsBindFlags.DEFAULT);
+        volumeGroup.add(volumeRow);
+        addTextRow(volumeGroup, _('Decibel Limits (l:h)'), 'db-limits');
+        addSwitchRow(volumeGroup, _('Logarithmic Taper'), 'taper-volume');
+        audioPage.add(volumeGroup);
 
-        audioGroup.add(vsyncRow);
-        audioGroup.add(latencyRow);
-        audioGroup.add(volumeRow);
-        audioPage.add(audioGroup);
+        const metaGroup = new Adw.PreferencesGroup({ title: _('Metadata Extraction') });
+        addTextRow(metaGroup, _('Cover Art Dump Path'), 'cover-art-path');
+        addTextRow(metaGroup, _('Metadata Dump Path'), 'metadata-path');
+        addTextRow(metaGroup, _('DACP Telemetry Path'), 'dacp-path');
+        audioPage.add(metaGroup);
 
-        const advancedPage = new Adw.PreferencesPage({
-            title: 'Advanced',
-            icon_name: 'preferences-other-symbolic'
+        const hlsGroup = new Adw.PreferencesGroup({ title: _('HTTP Live Streaming (HLS)') });
+        addSwitchRow(hlsGroup, _('Enable HLS Interception'), 'hls-support');
+        addTextRow(hlsGroup, _('Language Code'), 'hls-lang');
+        audioPage.add(hlsGroup);
+
+        addDocLink(audioPage, _('Audio and HLS Documentation'), 'https://github.com/FDH2/UxPlay#video-and-audio-options');
+
+        const advancedPage = new Adw.PreferencesPage({ title: _('Advanced'), icon_name: 'preferences-other-symbolic' });
+
+        const configInfoGroup = new Adw.PreferencesGroup({
+            title: _('Configuration File'),
+            description: _('UXPlay Control stores runtime settings in a dedicated file.\nPath: ~/.config/uxplay-control/uxplayrc\nChanges made here are automatically synced to this file.')
         });
+        advancedPage.add(configInfoGroup);
 
-        const advancedGroup = new Adw.PreferencesGroup({
-            title: 'Advanced Options'
-        });
+        const gstGroup = new Adw.PreferencesGroup({ title: _('GStreamer Pipeline') });
+        addTextRow(gstGroup, _('Parser Element'), 'gst-parser');
+        addTextRow(gstGroup, _('Decoder Element'), 'gst-decoder');
+        addTextRow(gstGroup, _('Converter Element'), 'gst-converter');
+        addTextRow(gstGroup, _('Video Sink'), 'gst-video-sink');
+        addTextRow(gstGroup, _('Audio Sink'), 'gst-audio-sink');
+        addSwitchRow(gstGroup, _('Force SW Decode'), 'force-sw-decode');
+        addSwitchRow(gstGroup, _('Prioritize Video4Linux2'), 'force-v4l2');
+        addComboRow(gstGroup, _('Color Space Matrix'), 'color-space', [_('Auto'), _('BT.709'), _('sRGB')]);
+        advancedPage.add(gstGroup);
 
-        const customPortsRow = new Adw.SwitchRow({
-            title: 'Use Custom Ports',
-            subtitle: getSummary('use-custom-ports')
-        });
-        settings.bind('use-custom-ports', customPortsRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        const exportGroup = new Adw.PreferencesGroup({ title: _('Stream Exports & Muxing') });
+        addTextRow(exportGroup, _('RTP Video Pipeline'), 'vrtp-pipeline');
+        addTextRow(exportGroup, _('RTP Audio Pipeline'), 'artp-pipeline');
+        addTextRow(exportGroup, _('Encode to MP4'), 'mp4-path');
+        advancedPage.add(exportGroup);
 
-        const portsRow = new Adw.EntryRow({
-            title: 'Port Configuration',
-            text: settings.get_string('port-config')
-        });
-        portsRow.connect('changed', () => {
-            settings.set_string('port-config', portsRow.text);
-        });
+        const diagGroup = new Adw.PreferencesGroup({ title: _('Diagnostics & Timeouts') });
+        addSwitchRow(diagGroup, _('Print FPS Telemetry'), 'fps-data');
+        addTextRow(diagGroup, _('Video Dump Path'), 'video-dump-path');
+        addTextRow(diagGroup, _('Audio Dump Path'), 'audio-dump-path');
+        const resetRow = new Adw.SpinRow({ title: _('Reset Timeout'), adjustment: new Gtk.Adjustment({ lower: 0, upper: 300, step_increment: 5, value: settings.get_int('reset-timeout') }) });
+        resetRow.connect('notify::value', () => settings.set_int('reset-timeout', resetRow.value));
+        diagGroup.add(resetRow);
+        addSwitchRow(diagGroup, _('Debug Logging'), 'debug');
+        advancedPage.add(diagGroup);
 
-        const resetRow = new Adw.SpinRow({
-            title: 'Reset Timeout (seconds)',
-            adjustment: new Gtk.Adjustment({
-                lower: 0,
-                upper: 300,
-                step_increment: 5,
-                value: settings.get_int('reset-timeout')
-            })
-        });
-        resetRow.connect('notify::value', () => {
-            settings.set_int('reset-timeout', resetRow.value);
-        });
+        addDocLink(advancedPage, _('Advanced Documentation'), 'https://github.com/FDH2/UxPlay#usage');
 
-        const debugRow = new Adw.SwitchRow({
-            title: 'Debug Logging',
-            subtitle: getSummary('debug')
-        });
-        settings.bind('debug', debugRow, 'active', Gio.SettingsBindFlags.DEFAULT);
-
-        advancedGroup.add(customPortsRow);
-        advancedGroup.add(portsRow);
-        advancedGroup.add(resetRow);
-        advancedGroup.add(debugRow);
-        advancedPage.add(advancedGroup);
-
-        const logsPage = new Adw.PreferencesPage({
-            title: 'Logs',
-            icon_name: 'document-properties-symbolic'
-        });
-
-        const logDisplayGroup = new Adw.PreferencesGroup({
-            title: 'Application Logs'
-        });
-
-        const logTextView = new Gtk.TextView({
-            editable: false,
-            cursor_visible: false,
-            wrap_mode: Gtk.WrapMode.WORD_CHAR,
-            vexpand: true,
-            hexpand: true
-        });
-
-        const logScrolledWindow = new Gtk.ScrolledWindow({
-            child: logTextView,
-            hscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
-            vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
-            min_content_height: 200
-        });
-
+        const logsPage = new Adw.PreferencesPage({ title: _('Logs'), icon_name: 'document-properties-symbolic' });
+        const logDisplayGroup = new Adw.PreferencesGroup({ title: _('Application Logs') });
+        const logTextView = new Gtk.TextView({ editable: false, cursor_visible: false, wrap_mode: Gtk.WrapMode.WORD_CHAR, vexpand: true, hexpand: true });
+        const logScrolledWindow = new Gtk.ScrolledWindow({ child: logTextView, hscrollbar_policy: Gtk.PolicyType.AUTOMATIC, vscrollbar_policy: Gtk.PolicyType.AUTOMATIC, min_content_height: 200 });
         logDisplayGroup.add(logScrolledWindow);
         logsPage.add(logDisplayGroup);
 
-        const logControlsGroup = new Adw.PreferencesGroup({
-            title: 'Log Management'
-        });
-
-        const maxLogLinesRow = new Adw.SpinRow({
-            title: 'Maximum Log Lines',
-            subtitle: 'Number of log lines to store. Very high values may impact performance.',
-            adjustment: new Gtk.Adjustment({
-                lower: 100,
-                upper: 50000,
-                step_increment: 100,
-                value: settings.get_int('max-log-lines')
-            }),
-            digits: 0
-        });
-        maxLogLinesRow.connect('notify::value', () => {
-            settings.set_int('max-log-lines', maxLogLinesRow.value);
-        });
-
+        const logControlsGroup = new Adw.PreferencesGroup({ title: _('Log Management') });
+        const maxLogLinesRow = new Adw.SpinRow({ title: _('Maximum Log Lines'), adjustment: new Gtk.Adjustment({ lower: 100, upper: 50000, step_increment: 100, value: settings.get_int('max-log-lines') }), digits: 0 });
+        maxLogLinesRow.connect('notify::value', () => settings.set_int('max-log-lines', maxLogLinesRow.value));
         logControlsGroup.add(maxLogLinesRow);
 
-
-        const clearLogsButton = new Gtk.Button({
-            label: 'Clear Logs',
-            halign: Gtk.Align.END,
-            margin_top: 10,
-            margin_bottom: 10
-        });
-        clearLogsButton.connect('clicked', () => {
-            settings.set_strv('uxplay-logs', []);
-        });
-
-        const clearLogsActionRow = new Adw.ActionRow({
-            title: 'Clear All Stored Logs'
-        });
-        const clearButtonForAction = new Gtk.Button({ label: 'Clear' });
-        clearButtonForAction.connect('clicked', () => {
-            settings.set_strv('uxplay-logs', []);
-        });
+        const clearLogsActionRow = new Adw.ActionRow({ title: _('Clear All Stored Logs') });
+        const clearButtonForAction = new Gtk.Button({ label: _('Clear') });
+        clearButtonForAction.connect('clicked', () => settings.set_strv('uxplay-logs', []));
         clearLogsActionRow.add_suffix(clearButtonForAction);
         clearLogsActionRow.set_activatable_widget(clearButtonForAction);
-
         logControlsGroup.add(clearLogsActionRow);
-
         logsPage.add(logControlsGroup);
 
-        const aboutPage = new Adw.PreferencesPage({
-            title: 'About',
-            icon_name: 'help-about-symbolic'
-        });
+        const aboutPage = new Adw.PreferencesPage({ title: _('About'), icon_name: 'help-about-symbolic' });
 
-        const extensionGroup = new Adw.PreferencesGroup({
-            title: 'Extension Information'
-        });
-
+        const extensionGroup = new Adw.PreferencesGroup({ title: _('Extension Information') });
         const md = this.metadata || {};
-        const extNameRow = new Adw.ActionRow({ title: 'Name', subtitle: md.name || 'N/A' });
-        const extDescRow = new Adw.ActionRow({ title: 'Description', subtitle: md.description || 'N/A' });
-        const extVersionRow = new Adw.ActionRow({ title: 'Version', subtitle: String(md.version ?? 'N/A') });
-        const extUuidRow = new Adw.ActionRow({ title: 'UUID', subtitle: md.uuid || 'N/A' });
-        const extShellRow = new Adw.ActionRow({
-            title: 'Supported GNOME Versions',
-            subtitle: Array.isArray(md['shell-version']) ? md['shell-version'].join(', ') : 'N/A'
-        });
-
-        extensionGroup.add(extNameRow);
-        extensionGroup.add(extDescRow);
-        extensionGroup.add(extVersionRow);
-        extensionGroup.add(extUuidRow);
-        extensionGroup.add(extShellRow);
+        extensionGroup.add(new Adw.ActionRow({ title: _('Name'), subtitle: md.name || 'N/A' }));
+        extensionGroup.add(new Adw.ActionRow({ title: _('Description'), subtitle: md.description || 'N/A' }));
+        extensionGroup.add(new Adw.ActionRow({ title: _('Version'), subtitle: String(md.version ?? 'N/A') }));
+        extensionGroup.add(new Adw.ActionRow({ title: _('UUID'), subtitle: md.uuid || 'N/A' }));
+        extensionGroup.add(new Adw.ActionRow({ title: _('Supported GNOME Versions'), subtitle: Array.isArray(md['shell-version']) ? md['shell-version'].join(', ') : 'N/A' }));
 
         if (md.url) {
-            const homepageRow = new Adw.ActionRow({ title: 'Homepage', subtitle: md.url });
-            const linkBtn = new Gtk.LinkButton({ label: 'Open', uri: md.url });
+            const homepageRow = new Adw.ActionRow({ title: _('Homepage'), subtitle: md.url });
+            const linkBtn = new Gtk.LinkButton({ label: _('Open'), uri: md.url });
             homepageRow.add_suffix(linkBtn);
             homepageRow.set_activatable_widget(linkBtn);
             extensionGroup.add(homepageRow);
         }
 
-        const developerGroup = new Adw.PreferencesGroup({
-            title: 'Developer Information'
-        });
-
-        const avatar = new Adw.Avatar({
-            size: 100,
-            text: 'X',
-            halign: Gtk.Align.CENTER
-        });
+        const developerGroup = new Adw.PreferencesGroup({ title: _('Developer Information') });
+        const avatar = new Adw.Avatar({ size: 100, text: 'X', halign: Gtk.Align.CENTER });
         avatar.add_css_class('about-avatar');
+
+        const resourceBundlePath = GLib.build_filenamev([(this.metadata && this.metadata.path) ? this.metadata.path : this.path, 'resources.gresource']);
+        try {
+            Gio.resources_register(Gio.Resource.load(resourceBundlePath));
+        } catch (e) {}
 
         try {
             const resourcePath = '/org/gnome/shell/extensions/uxplay-control/icons/ava.png';
-            const stream = Gio.Resource.load(resourcePath);
+            const stream = Gio.resources_open_stream(resourcePath, Gio.ResourceLookupFlags.NONE);
             if (stream) {
                 const pixbuf = GdkPixbuf.Pixbuf.new_from_stream_at_scale(stream, 100, 100, true, null);
-                const texture = Gdk.Texture.new_for_pixbuf(pixbuf);
-                avatar.set_custom_image(texture);
+                avatar.set_custom_image(Gdk.Texture.new_for_pixbuf(pixbuf));
             }
-        } catch (e) {
-            console.log('Could not load avatar image from gresource:', e);
-        }
+        } catch (e) {}
 
-        const nicknameLabel = new Gtk.Label({
-            label: 'xxanqw',
-            halign: Gtk.Align.CENTER
-        });
+        const nicknameLabel = new Gtk.Label({ label: _('xxanqw'), halign: Gtk.Align.CENTER });
         nicknameLabel.add_css_class('title-3');
         nicknameLabel.add_css_class('about-nickname');
 
-        const devDescLabel = new Gtk.Label({
-            label: 'smol ukrainian dev🤫',
-            halign: Gtk.Align.CENTER,
-            wrap: true
-        });
+        const devDescLabel = new Gtk.Label({ label: _('smol ukrainian dev🤫'), halign: Gtk.Align.CENTER, wrap: true });
         devDescLabel.add_css_class('dim-label');
 
-        const buttonsBox = new Gtk.Box({
-            orientation: Gtk.Orientation.VERTICAL,
-            spacing: 10,
-            halign: Gtk.Align.CENTER,
-            css_classes: ['about-buttons']
-        });
+        const buttonsBox = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 10, halign: Gtk.Align.CENTER, css_classes: ['about-buttons'] });
+        const paypalLabel = new Gtk.Label({ label: _('PayPal: travix10x@icloud.com'), css_classes: ['about-button'], selectable: true });
+        
+        const bankButton = new Gtk.Button({ label: _('Support via Bank'), css_classes: ['about-button'] });
+        bankButton.connect('clicked', () => { try { Gio.AppInfo.launch_default_for_uri('https://xxanqw.pp.ua/donate', null); } catch (e) {} });
 
-        const paypalLabel = new Gtk.Label({
-            label: 'PayPal: travix10x@icloud.com',
-            css_classes: ['about-button'],
-            selectable: true
-        });
-
-        const bankButton = new Gtk.Button({
-            label: 'Support via Bank',
-            css_classes: ['about-button']
-        });
-        bankButton.connect('clicked', () => {
-            try {
-                Gio.AppInfo.launch_default_for_uri('https://xxanqw.pp.ua/donate', null);
-            } catch (e) {
-                console.log('Could not open URL:', e);
-            }
-        });
-
-        const projectButton = new Gtk.Button({
-            label: 'Project GitHub',
-            css_classes: ['about-button']
-        });
-        projectButton.connect('clicked', () => {
-            try {
-                Gio.AppInfo.launch_default_for_uri('https://xxanqw.pp.ua/uxpc', null);
-            } catch (e) {
-                console.log('Could not open URL:', e);
-            }
-        });
+        const projectButton = new Gtk.Button({ label: _('Project GitHub'), css_classes: ['about-button'] });
+        projectButton.connect('clicked', () => { try { Gio.AppInfo.launch_default_for_uri('https://xxanqw.pp.ua/uxpc', null); } catch (e) {} });
 
         buttonsBox.append(paypalLabel);
         buttonsBox.append(bankButton);
@@ -480,29 +311,25 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         aboutPage.add(developerGroup);
 
         if (!isUxPlayAvailable) {
-            const errorPage = new Adw.PreferencesPage({
-                title: 'UXPlay Not Found',
-                icon_name: 'dialog-error-symbolic'
-            });
+            const errorPage = new Adw.PreferencesPage({ title: _('UXPlay Not Found'), icon_name: 'dialog-error-symbolic' });
             const errorGroup = new Adw.PreferencesGroup();
-            const statusPage = new Adw.StatusPage({
-                title: 'UXPlay Not Found',
-                description: "UXPlay is not installed or not in your system's PATH.\n\nPlease install it and restart GNOME Shell for the extension to work.",
+            errorGroup.add(new Adw.StatusPage({
+                title: _('UXPlay Not Found'),
+                description: _("UXPlay is not installed or not in your system's PATH.\n\nPlease install it and restart GNOME Shell for the extension to work."),
                 icon_name: 'dialog-error-symbolic',
                 vexpand: true,
-            });
-            errorGroup.add(statusPage);
+            }));
             errorPage.add(errorGroup);
             window.add(errorPage);
 
-            generalPage.set_sensitive(false);
+            serverPage.set_sensitive(false);
             videoPage.set_sensitive(false);
             audioPage.set_sensitive(false);
             advancedPage.set_sensitive(false);
             logsPage.set_sensitive(false);
         }
 
-        window.add(generalPage);
+        window.add(serverPage);
         window.add(videoPage);
         window.add(audioPage);
         window.add(advancedPage);
@@ -511,20 +338,13 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
 
         const loadLogsToView = () => {
             if (!logTextView || !settings) return;
-
             const logs = settings.get_strv('uxplay-logs');
-            const buffer = logTextView.get_buffer();
-            buffer.set_text(logs.join('\n'), -1);
-
+            logTextView.get_buffer().set_text(logs.join('\n'), -1);
             if (logScrolledWindow) {
                 const adj = logScrolledWindow.get_vadjustment();
                 if (adj) {
                     GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                        if (adj.get_upper() > adj.get_page_size()) {
-                            adj.set_value(adj.get_upper() - adj.get_page_size());
-                        } else {
-                            adj.set_value(0);
-                        }
+                        adj.set_value(adj.get_upper() > adj.get_page_size() ? adj.get_upper() - adj.get_page_size() : 0);
                         return GLib.SOURCE_REMOVE;
                     });
                 }
@@ -534,11 +354,8 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         if (isUxPlayAvailable) {
             loadLogsToView();
             const logsChangedSignalId = settings.connect('changed::uxplay-logs', loadLogsToView);
-
             window.connect('close-request', () => {
-                if (settings && logsChangedSignalId > 0) {
-                    settings.disconnect(logsChangedSignalId);
-                }
+                if (settings && logsChangedSignalId > 0) settings.disconnect(logsChangedSignalId);
             });
         }
     }
