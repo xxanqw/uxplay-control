@@ -25,7 +25,7 @@ function _buildConfigContent(settings) {
         '# Edit settings via the Preferences window to keep this file in sync.',
         '#',
         '# You can freely copy this file into global UXPlay config folder, so settings apply even from terminal.',
-        '# But global config will not be synced with UXPlay Control.'
+        '# But global config will not be synced with UXPlay Control.',
         '',
     ];
 
