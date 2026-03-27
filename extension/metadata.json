@@ -7,9 +7,10 @@
     "46",
     "47",
     "48",
-    "49"
+    "49",
+    "50"
   ],
-  "version": 9,
+  "version": 10,
   "url": "https://xxanqw.pp.ua/uxpc",
   "gettext-domain": "uxplay-control",
   "settings-schema": "org.gnome.shell.extensions.uxplay-control"
