@@ -17,6 +17,9 @@ fi
 
 
 # Compile locales
+echo -e "\033[1;32m→ Updating translation template\033[0m"
+xgettext --from-code=UTF-8 --language=JavaScript \
+    -o po/uxplay-control.pot extension.js prefs.js autostart.js
 echo -e "\033[1;32m→ Compiling locales\033[0m"
 for po in po/*.po; do
     lang=$(basename "$po" .po)

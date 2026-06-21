@@ -5,6 +5,7 @@ import GLib from 'gi://GLib';
 import Gdk from 'gi://Gdk';
 import GdkPixbuf from 'gi://GdkPixbuf';
 import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import { syncAutostart as _syncAutostart } from './autostart.js';
 
 export default class UXPlayControlPreferences extends ExtensionPreferences {
     constructor(metadata) {
@@ -79,7 +80,56 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
             page.add(docGroup);
         };
 
-        const serverPage = new Adw.PreferencesPage({ title: _('Server & Security'), icon_name: 'network-server-symbolic' });
+        const generalPage = new Adw.PreferencesPage({
+            name: 'general',
+            title: _('General'),
+            icon_name: 'preferences-system-symbolic',
+        });
+
+        const startupGroup = new Adw.PreferencesGroup({
+            title: _('Startup'),
+            description: _('Launch UXPlay automatically when you log in.'),
+        });
+        generalPage.add(startupGroup);
+
+        const autostartRow = new Adw.SwitchRow({
+            title: _('Start UXPlay on login'),
+            subtitle: _('Requires the uxplay binary to be installed.'),
+        });
+        settings.bind('autostart-on-login', autostartRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        startupGroup.add(autostartRow);
+
+        const autostartDelayRow = new Adw.SpinRow({
+            title: _('Autostart delay'),
+            subtitle: _('Seconds to wait after login before launching UXPlay.'),
+            adjustment: new Gtk.Adjustment({ lower: 0, upper: 300, step_increment: 5 }),
+        });
+        settings.bind('autostart-delay', autostartDelayRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        autostartDelayRow.set_sensitive(autostartRow.active);
+        autostartRow.connect('notify::active', () => autostartDelayRow.set_sensitive(autostartRow.active));
+        startupGroup.add(autostartDelayRow);
+
+        if (!isUxPlayAvailable) {
+            const banner = new Adw.Banner({
+                title: _('The uxplay binary was not found in $PATH.'),
+                button_label: _('Installation help'),
+            });
+            banner.connect('button-clicked', () => {
+                try { Gio.AppInfo.launch_default_for_uri('https://github.com/FDH2/UxPlay#installation', null); }
+                catch (_) {}
+            });
+            if (typeof generalPage.set_banner === 'function') generalPage.set_banner(banner);
+        }
+
+        _syncAutostart(settings);
+        const _autostartConn1 = settings.connect('changed::autostart-on-login', () => _syncAutostart(settings));
+        const _autostartConn2 = settings.connect('changed::autostart-delay', () => _syncAutostart(settings));
+        window.connect('close-request', () => {
+            if (_autostartConn1) settings.disconnect(_autostartConn1);
+            if (_autostartConn2) settings.disconnect(_autostartConn2);
+        });
+
+        const serverPage = new Adw.PreferencesPage({ name: 'server-security', title: _('Server & Security'), icon_name: 'network-server-symbolic' });
 
         const identityGroup = new Adw.PreferencesGroup({ title: _('Server Identity') });
         addTextRow(identityGroup, _('Server Name'), 'server-name');
@@ -131,7 +181,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         
         addDocLink(serverPage, _('Server and Security Documentation'), 'https://github.com/FDH2/UxPlay#usage');
 
-        const videoPage = new Adw.PreferencesPage({ title: _('Video'), icon_name: 'video-display-symbolic' });
+        const videoPage = new Adw.PreferencesPage({ name: 'video', title: _('Video'), icon_name: 'video-display-symbolic' });
 
         const displayGroup = new Adw.PreferencesGroup({ title: _('Display Settings') });
         addSwitchRow(displayGroup, _('H265 Support'), 'h265');
@@ -158,7 +208,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
 
         addDocLink(videoPage, _('Video Documentation'), 'https://github.com/FDH2/UxPlay#video-and-audio-options');
 
-        const audioPage = new Adw.PreferencesPage({ title: _('Audio & HLS'), icon_name: 'audio-volume-high-symbolic' });
+        const audioPage = new Adw.PreferencesPage({ name: 'audio-hls', title: _('Audio & HLS'), icon_name: 'audio-volume-high-symbolic' });
 
         const audioSyncGroup = new Adw.PreferencesGroup({ title: _('Audio Synchronization') });
         addSwitchRow(audioSyncGroup, _('Video Sync'), 'vsync');
@@ -189,7 +239,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
 
         addDocLink(audioPage, _('Audio and HLS Documentation'), 'https://github.com/FDH2/UxPlay#video-and-audio-options');
 
-        const advancedPage = new Adw.PreferencesPage({ title: _('Advanced'), icon_name: 'preferences-other-symbolic' });
+        const advancedPage = new Adw.PreferencesPage({ name: 'advanced', title: _('Advanced'), icon_name: 'preferences-other-symbolic' });
 
         const configInfoGroup = new Adw.PreferencesGroup({
             title: _('Configuration File'),
@@ -226,7 +276,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
 
         addDocLink(advancedPage, _('Advanced Documentation'), 'https://github.com/FDH2/UxPlay#usage');
 
-        const logsPage = new Adw.PreferencesPage({ title: _('Logs'), icon_name: 'document-properties-symbolic' });
+        const logsPage = new Adw.PreferencesPage({ name: 'logs', title: _('Logs'), icon_name: 'document-properties-symbolic' });
         const logDisplayGroup = new Adw.PreferencesGroup({ title: _('Application Logs') });
         const logTextView = new Gtk.TextView({ editable: false, cursor_visible: false, wrap_mode: Gtk.WrapMode.WORD_CHAR, vexpand: true, hexpand: true });
         const logScrolledWindow = new Gtk.ScrolledWindow({ child: logTextView, hscrollbar_policy: Gtk.PolicyType.AUTOMATIC, vscrollbar_policy: Gtk.PolicyType.AUTOMATIC, min_content_height: 200 });
@@ -246,7 +296,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         logControlsGroup.add(clearLogsActionRow);
         logsPage.add(logControlsGroup);
 
-        const aboutPage = new Adw.PreferencesPage({ title: _('About'), icon_name: 'help-about-symbolic' });
+        const aboutPage = new Adw.PreferencesPage({ name: 'about', title: _('About'), icon_name: 'help-about-symbolic' });
 
         const extensionGroup = new Adw.PreferencesGroup({ title: _('Extension Information') });
         const md = this.metadata || {};
@@ -322,6 +372,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
             errorPage.add(errorGroup);
             window.add(errorPage);
 
+            generalPage.set_sensitive(false);
             serverPage.set_sensitive(false);
             videoPage.set_sensitive(false);
             audioPage.set_sensitive(false);
@@ -329,6 +380,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
             logsPage.set_sensitive(false);
         }
 
+        window.add(generalPage);
         window.add(serverPage);
         window.add(videoPage);
         window.add(audioPage);

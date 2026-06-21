@@ -6,6 +6,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
+import { syncAutostart } from './autostart.js';
 
 function _configDir() {
     return GLib.build_filenamev([GLib.get_user_config_dir(), 'uxplay-control']);
@@ -14,6 +15,9 @@ function _configDir() {
 function _configFile() {
     return GLib.build_filenamev([_configDir(), 'uxplayrc']);
 }
+
+const CURRENT_SCHEMA_VERSION = 8;
+const INTERNAL_SETTINGS_KEYS = new Set(['schema-version', 'uxplay-logs', 'first-run-completed']);
 
 function _buildConfigContent(settings) {
     const ts = GLib.DateTime.new_now_local().format('%Y-%m-%d %H:%M:%S');
@@ -175,41 +179,35 @@ function _writeConfigFile(settings) {
     }
 }
 
+function _hasNonDefaultSettings(settings) {
+    const schema = settings.settings_schema;
+    if (!schema) return false;
+    for (const key of schema.list_keys()) {
+        if (INTERNAL_SETTINGS_KEYS.has(key)) continue;
+        const schemaKey = schema.get_key(key);
+        if (!schemaKey) continue;
+        const def = schemaKey.get_default_value();
+        if (def && !settings.get_value(key).equal(def)) return true;
+    }
+    return false;
+}
+
 function _checkAndMigrate(settings) {
-    if (settings.get_int('schema-version') >= 8) return;
+    if (settings.get_int('schema-version') >= CURRENT_SCHEMA_VERSION) return;
 
-    const hasCustomSettings = (
-        settings.get_string('server-name')       !== 'UXPlay-GNOME' ||
-        settings.get_boolean('no-hostname')      !== false           ||
-        settings.get_int('security-mode')        !== 0               ||
-        settings.get_boolean('h265')             !== false           ||
-        settings.get_int('resolution-preset')    !== 0               ||
-        settings.get_boolean('fullscreen')       !== false           ||
-        settings.get_boolean('vsync')            !== true            ||
-        settings.get_double('audio-latency')     !== 0.0             ||
-        settings.get_double('initial-volume')    !== 1.0             ||
-        settings.get_boolean('use-custom-ports') !== false           ||
-        settings.get_int('reset-timeout')        !== 15              ||
-        settings.get_boolean('debug')            !== false
-    );
-
+    const wasUpgrade = _hasNonDefaultSettings(settings);
     const writeOk = _writeConfigFile(settings);
-    settings.set_int('schema-version', 8);
+    settings.set_int('schema-version', CURRENT_SCHEMA_VERSION);
 
     if (!writeOk) {
         Main.notify(_('UXPlay Control'), _('⚠ Could not create config file at ~/.config/uxplay-control/uxplayrc.'));
         return;
     }
 
-    if (hasCustomSettings) {
+    if (wasUpgrade) {
         Main.notify(
             _('UXPlay Control — Upgraded to v8'),
             '⚠ Breaking change: UxPlay options are now stored in ~/.config/uxplay-control/uxplayrc.\n\nYour previous preferences were migrated automatically.'
-        );
-    } else {
-        Main.notify(
-            'UXPlay Control',
-            _('Config file created at ~/.config/uxplay-control/uxplayrc. Manage UxPlay settings through Preferences.')
         );
     }
 }
@@ -232,6 +230,7 @@ const UXPlayIndicator = GObject.registerClass(
             this._stdoutCancellable = null;
             this._stderrCancellable = null;
             this._killTimeoutId = null;
+            this._adoptCheckTimeoutId = null;
 
             this._icon = new St.Icon({
                 gicon: Gio.icon_new_for_string('resource:///org/gnome/shell/extensions/uxplay-control/icons/overlapping-windows-symbolic.svg'),
@@ -252,6 +251,60 @@ const UXPlayIndicator = GObject.registerClass(
             this.menu.addMenuItem(this._settingsItem);
 
             this._updateUI();
+            this._adoptExistingOrScheduleCheck();
+        }
+
+        _detectExistingUxplayPid() {
+            try {
+                const [, out] = GLib.spawn_command_line_sync('pidof -x uxplay');
+                const output = out.toString().trim();
+                if (!output) return null;
+                const pid = parseInt(output.split(/\s+/)[0], 10);
+                if (!Number.isInteger(pid) || pid <= 0) return null;
+                return pid;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        _adoptExistingUxplay(pid) {
+            if (this._isRunning) return;
+            this._uxplayProcess = pid;
+            this._isRunning = true;
+            this._updateUI();
+            this._addLogMessage(`Adopted running UXPlay (PID: ${pid}) started outside the extension.`, false);
+            GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, (exitedPid, status) => {
+                if (this._uxplayProcess !== exitedPid) return;
+                this._isRunning = false;
+                this._uxplayProcess = null;
+                this._updateUI();
+                this._addLogMessage(
+                    `Adopted UXPlay (PID: ${exitedPid}) exited with status ${status}.`,
+                    status !== 0 && status !== 15 && status !== 9
+                );
+            });
+        }
+
+        _adoptExistingOrScheduleCheck() {
+            const pid = this._detectExistingUxplayPid();
+            if (pid) {
+                this._adoptExistingUxplay(pid);
+                return;
+            }
+            if (this._settings.get_boolean('autostart-on-login')) {
+                const delay = Math.max(0, this._settings.get_int('autostart-delay'));
+                if (delay > 0 && delay <= 300) {
+                    this._adoptCheckTimeoutId = GLib.timeout_add_seconds(
+                        GLib.PRIORITY_DEFAULT, delay + 1, () => {
+                            this._adoptCheckTimeoutId = null;
+                            if (this._isRunning) return GLib.SOURCE_REMOVE;
+                            const p = this._detectExistingUxplayPid();
+                            if (p) this._adoptExistingUxplay(p);
+                            return GLib.SOURCE_REMOVE;
+                        }
+                    );
+                }
+            }
         }
 
         _addLogMessage(line, isError = false) {
@@ -387,20 +440,33 @@ const UXPlayIndicator = GObject.registerClass(
         }
 
         _stopUXPlay() {
-            if (!this._isRunning || !this._uxplaySubprocess) return;
+            if (!this._isRunning) return;
             this._addLogMessage('Stopping UXPlay…', false);
             this._closePipes();
 
+            const sendSigterm = () => {
+                if (this._uxplaySubprocess) {
+                    try { this._uxplaySubprocess.send_signal(15); } catch (_) {}
+                } else if (this._uxplayProcess) {
+                    try { GLib.spawn_command_line_sync(`kill -15 ${this._uxplayProcess}`); } catch (_) {}
+                }
+            };
+            const forceKill = () => {
+                if (this._uxplaySubprocess) {
+                    try { this._uxplaySubprocess.force_exit(); } catch (_) {}
+                } else if (this._uxplayProcess) {
+                    try { GLib.spawn_command_line_sync(`kill -9 ${this._uxplayProcess}`); } catch (_) {}
+                }
+            };
+
             try {
-                this._uxplaySubprocess.send_signal(15);
+                sendSigterm();
                 if (this._killTimeoutId) {
                     GLib.Source.remove(this._killTimeoutId);
                     this._killTimeoutId = null;
                 }
                 this._killTimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 3, () => {
-                    if (this._isRunning && this._uxplaySubprocess) {
-                        try { this._uxplaySubprocess.force_exit(); } catch (_) {}
-                    }
+                    if (this._isRunning) forceKill();
                     this._killTimeoutId = null;
                     return GLib.SOURCE_REMOVE;
                 });
@@ -435,7 +501,7 @@ const UXPlayIndicator = GObject.registerClass(
         }
 
         destroy() {
-            if (this._isRunning && this._uxplaySubprocess) {
+            if (this._isRunning) {
                 this._stopUXPlay();
             } else {
                 this._closePipes();
@@ -443,6 +509,10 @@ const UXPlayIndicator = GObject.registerClass(
             if (this._killTimeoutId) {
                 GLib.Source.remove(this._killTimeoutId);
                 this._killTimeoutId = null;
+            }
+            if (this._adoptCheckTimeoutId) {
+                GLib.Source.remove(this._adoptCheckTimeoutId);
+                this._adoptCheckTimeoutId = null;
             }
             this._uxplaySubprocess = null;
             super.destroy();
@@ -455,7 +525,6 @@ export default class UXPlayControlExtension extends Extension {
         super(metadata);
         this._indicator = null;
         this._settings = null;
-        this._settingsChangedId = null;
     }
 
     enable() {
@@ -467,10 +536,14 @@ export default class UXPlayControlExtension extends Extension {
         this._settings = this.getSettings();
         _checkAndMigrate(this._settings);
 
-        const _skipKeys = new Set(['uxplay-logs', 'max-log-lines', 'schema-version']);
-        this._settingsChangedId = this._settings.connect('changed', (_settings, key) => {
-            if (!_skipKeys.has(key)) _writeConfigFile(this._settings);
-        });
+        this._settings.connectObject('changed', (_settings, key) => {
+            if (!INTERNAL_SETTINGS_KEYS.has(key)) _writeConfigFile(this._settings);
+        }, this);
+
+        this._settings.connectObject('changed::autostart-on-login',
+            () => syncAutostart(this._settings), this);
+        this._settings.connectObject('changed::autostart-delay',
+            () => syncAutostart(this._settings), this);
 
         const isUxPlayAvailable = !!GLib.find_program_in_path('uxplay');
         this._indicator = new UXPlayIndicator(this._settings, () => this.openPreferences(), isUxPlayAvailable);
@@ -478,10 +551,8 @@ export default class UXPlayControlExtension extends Extension {
     }
 
     disable() {
-        if (this._settingsChangedId && this._settings) {
-            this._settings.disconnect(this._settingsChangedId);
-            this._settingsChangedId = null;
-        }
+        this._settings?.disconnectObject(this);
+
         const resourcePath = GLib.build_filenamev([this.path, 'resources.gresource']);
         try { Gio.resources_unregister(Gio.Resource.load(resourcePath)); } catch (_) {}
 
