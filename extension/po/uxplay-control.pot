@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-21 22:00+0200\n"
+"POT-Creation-Date: 2026-06-22 01:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgstr ""
 msgid "UXPlay Control — Upgraded to v8"
 msgstr ""
 
-#: extension.js:275 extension.js:521
+#: extension.js:275 extension.js:512
 msgid "Status: Stopped"
 msgstr ""
 
@@ -37,19 +37,19 @@ msgstr ""
 msgid "Preferences"
 msgstr ""
 
-#: extension.js:507
+#: extension.js:498
 msgid "Status: UXPlay not found"
 msgstr ""
 
-#: extension.js:508 extension.js:522
+#: extension.js:499 extension.js:513
 msgid "Start UXPlay"
 msgstr ""
 
-#: extension.js:516
+#: extension.js:507
 msgid "Status: Running"
 msgstr ""
 
-#: extension.js:517
+#: extension.js:508
 msgid "Stop UXPlay"
 msgstr ""
 

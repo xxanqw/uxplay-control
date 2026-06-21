@@ -319,6 +319,10 @@ const UXPlayIndicator = GObject.registerClass(
             if (this._settings.get_boolean('autostart-on-login')) {
                 const delay = Math.max(0, this._settings.get_int('autostart-delay'));
                 if (delay > 0 && delay <= 300) {
+                    if (this._adoptCheckTimeoutId) {
+                        GLib.Source.remove(this._adoptCheckTimeoutId);
+                        this._adoptCheckTimeoutId = null;
+                    }
                     this._adoptCheckTimeoutId = GLib.timeout_add_seconds(
                         GLib.PRIORITY_DEFAULT, delay + 1, () => {
                             this._adoptCheckTimeoutId = null;
@@ -384,20 +388,16 @@ const UXPlayIndicator = GObject.registerClass(
             this._stdoutCancellable = null;
             this._stderrCancellable?.cancel();
             this._stderrCancellable = null;
-            try {
-                this._stdoutDataInputStream?.close_async(GLib.PRIORITY_DEFAULT, null, () => {
-                    this._stdoutStream?.close_async(GLib.PRIORITY_DEFAULT, null, null);
-                    this._stdoutStream = null;
-                });
-                this._stdoutDataInputStream = null;
-            } catch (e) {}
-            try {
-                this._stderrDataInputStream?.close_async(GLib.PRIORITY_DEFAULT, null, () => {
-                    this._stderrStream?.close_async(GLib.PRIORITY_DEFAULT, null, null);
-                    this._stderrStream = null;
-                });
-                this._stderrDataInputStream = null;
-            } catch (e) {}
+            this._stdoutDataInputStream?.close_async(GLib.PRIORITY_DEFAULT, null, () => {
+                this._stdoutStream?.close_async(GLib.PRIORITY_DEFAULT, null, null);
+                this._stdoutStream = null;
+            });
+            this._stdoutDataInputStream = null;
+            this._stderrDataInputStream?.close_async(GLib.PRIORITY_DEFAULT, null, () => {
+                this._stderrStream?.close_async(GLib.PRIORITY_DEFAULT, null, null);
+                this._stderrStream = null;
+            });
+            this._stderrDataInputStream = null;
         }
 
         _toggleUXPlay() {
@@ -419,12 +419,7 @@ const UXPlayIndicator = GObject.registerClass(
                 launcher.setenv('UXPLAYRC', _configFile(), true);
 
                 let proc;
-                try {
-                    proc = launcher.spawnv(['stdbuf', '-oL', 'uxplay']);
-                } catch (e) {
-                    this._addLogMessage(`Failed to start UXPlay: ${e.message}`, true);
-                    return;
-                }
+                proc = launcher.spawnv(['stdbuf', '-oL', 'uxplay']);
 
                 this._uxplaySubprocess = proc;
                 this._uxplayProcess = proc.get_identifier();
@@ -484,20 +479,16 @@ const UXPlayIndicator = GObject.registerClass(
                 }
             };
 
-            try {
-                sendSigterm();
-                if (this._killTimeoutId) {
-                    GLib.Source.remove(this._killTimeoutId);
-                    this._killTimeoutId = null;
-                }
-                this._killTimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 3, () => {
-                    if (this._isRunning) forceKill();
-                    this._killTimeoutId = null;
-                    return GLib.SOURCE_REMOVE;
-                });
-            } catch (e) {
-                console.error(`UXPlayControl: Error stopping UXPlay: ${e.message}`);
+            sendSigterm();
+            if (this._killTimeoutId) {
+                GLib.Source.remove(this._killTimeoutId);
+                this._killTimeoutId = null;
             }
+            this._killTimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 3, () => {
+                if (this._isRunning) forceKill();
+                this._killTimeoutId = null;
+                return GLib.SOURCE_REMOVE;
+            });
         }
 
         _updateUI() {
