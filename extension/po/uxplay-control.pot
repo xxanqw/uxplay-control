@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-21 20:44+0200\n"
+"POT-Creation-Date: 2026-06-21 20:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,7 +97,7 @@ msgstr ""
 msgid "Installation help"
 msgstr ""
 
-#: prefs.js:132 prefs.js:192
+#: prefs.js:132
 msgid "Server Identity"
 msgstr ""
 
@@ -190,6 +190,10 @@ msgstr ""
 
 #: prefs.js:190
 msgid "Server & Security"
+msgstr ""
+
+#: prefs.js:192
+msgid "Hardware Identity"
 msgstr ""
 
 #: prefs.js:193

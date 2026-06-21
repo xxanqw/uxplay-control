@@ -115,7 +115,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
                 button_label: _('Installation help'),
             });
             banner.connect('button-clicked', () => {
-                try { Gio.AppInfo.launch_default_for_uri('https://github.com/FDH2/UxPlay#installation', null); }
+                try { Gio.AppInfo.launch_default_for_uri('https://github.com/FDH2/UxPlay#after-installation', null); }
                 catch (_) {}
             });
             if (typeof generalPage.set_banner === 'function') generalPage.set_banner(banner);
@@ -261,7 +261,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         addSwitchRow(geomGroup, _('Keep Window Open on Exit'), 'no-close-window');
         videoPage.add(geomGroup);
 
-        addDocLink(videoPage, _('Video Documentation'), 'https://github.com/FDH2/UxPlay#video-and-audio-options');
+        addDocLink(videoPage, _('Video Documentation'), 'https://github.com/FDH2/UxPlay#usage');
 
         const audioPage = new Adw.PreferencesPage({ name: 'audio-hls', title: _('Audio & HLS'), icon_name: 'audio-volume-high-symbolic' });
 
@@ -292,7 +292,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         addTextRow(hlsGroup, _('Language Code'), 'hls-lang');
         audioPage.add(hlsGroup);
 
-        addDocLink(audioPage, _('Audio and HLS Documentation'), 'https://github.com/FDH2/UxPlay#video-and-audio-options');
+        addDocLink(audioPage, _('Audio and HLS Documentation'), 'https://github.com/FDH2/UxPlay#usage');
 
         const advancedPage = new Adw.PreferencesPage({ name: 'advanced', title: _('Advanced'), icon_name: 'preferences-other-symbolic' });
 
