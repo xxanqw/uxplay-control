@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-21 20:51+0200\n"
+"POT-Creation-Date: 2026-06-21 21:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,48 +65,48 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: prefs.js:90
-msgid "Startup"
-msgstr ""
-
-#: prefs.js:91
-msgid "Launch UXPlay automatically when you log in."
-msgstr ""
-
-#: prefs.js:96
-msgid "Start UXPlay on login"
-msgstr ""
-
-#: prefs.js:97
-msgid "Requires the uxplay binary to be installed."
-msgstr ""
-
-#: prefs.js:103
-msgid "Autostart delay"
-msgstr ""
-
-#: prefs.js:104
-msgid "Seconds to wait after login before launching UXPlay."
-msgstr ""
-
-#: prefs.js:114
-msgid "The uxplay binary was not found in $PATH."
-msgstr ""
-
-#: prefs.js:115
-msgid "Installation help"
-msgstr ""
-
-#: prefs.js:132
+#: prefs.js:89
 msgid "Server Identity"
 msgstr ""
 
-#: prefs.js:133
+#: prefs.js:90
 msgid "Server Name"
 msgstr ""
 
-#: prefs.js:134
+#: prefs.js:91
 msgid "No Hostname Suffix"
+msgstr ""
+
+#: prefs.js:95
+msgid "Startup"
+msgstr ""
+
+#: prefs.js:96
+msgid "Launch UXPlay automatically when you log in."
+msgstr ""
+
+#: prefs.js:101
+msgid "Start UXPlay on login"
+msgstr ""
+
+#: prefs.js:102
+msgid "Requires the uxplay binary to be installed."
+msgstr ""
+
+#: prefs.js:108
+msgid "Autostart delay"
+msgstr ""
+
+#: prefs.js:109
+msgid "Seconds to wait after login before launching UXPlay."
+msgstr ""
+
+#: prefs.js:119
+msgid "The uxplay binary was not found in $PATH."
+msgstr ""
+
+#: prefs.js:120
+msgid "Installation help"
 msgstr ""
 
 #: prefs.js:137

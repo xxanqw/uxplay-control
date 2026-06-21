@@ -11,8 +11,13 @@ export function syncAutostart(settings) {
         try { file.delete(null); } catch (_) {}
         return;
     }
-    const dir = Gio.File.new_for_path(_autostartDir);
-    if (!dir.query_exists(null)) dir.make_directory_with_parents(null);
+    try {
+        const dir = Gio.File.new_for_path(_autostartDir);
+        if (!dir.query_exists(null)) dir.make_directory_with_parents(null);
+    } catch (e) {
+        console.error(`UXPlayControl: Failed to create autostart directory: ${e.message}`);
+        return;
+    }
     const delay = Math.max(0, settings.get_int('autostart-delay'));
     const exec = delay > 0
         ? `sh -c "sleep ${delay}; exec env UXPLAYRC='${_uxplayrcPath}' uxplay"`
@@ -29,10 +34,15 @@ export function syncAutostart(settings) {
         'X-GNOME-Autostart-enabled=true',
         '',
     ].join('\n');
-    file.replace_contents(
-        new TextEncoder().encode(body),
-        null, false,
-        Gio.FileCreateFlags.REPLACE_DESTINATION,
-        null
-    );
+    try {
+        const [ok] = file.replace_contents(
+            new TextEncoder().encode(body),
+            null, false,
+            Gio.FileCreateFlags.REPLACE_DESTINATION,
+            null
+        );
+        if (!ok) throw new Error('replace_contents returned false');
+    } catch (e) {
+        console.error(`UXPlayControl: Failed to write autostart .desktop: ${e.message}`);
+    }
 }

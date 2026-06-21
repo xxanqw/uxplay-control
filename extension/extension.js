@@ -17,7 +17,7 @@ function _configFile() {
 }
 
 const CURRENT_SCHEMA_VERSION = 8;
-const INTERNAL_SETTINGS_KEYS = new Set(['schema-version', 'uxplay-logs', 'first-run-completed']);
+const INTERNAL_SETTINGS_KEYS = new Set(['schema-version', 'uxplay-logs', 'first-run-completed', 'autostart-on-login', 'autostart-delay']);
 
 function _buildConfigContent(settings) {
     const ts = GLib.DateTime.new_now_local().format('%Y-%m-%d %H:%M:%S');

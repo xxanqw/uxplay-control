@@ -107,9 +107,9 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         const autostartDelayRow = new Adw.SpinRow({
             title: _('Autostart delay'),
             subtitle: _('Seconds to wait after login before launching UXPlay.'),
-            adjustment: new Gtk.Adjustment({ lower: 0, upper: 300, step_increment: 5 }),
+            adjustment: new Gtk.Adjustment({ lower: 0, upper: 300, step_increment: 5, value: settings.get_int('autostart-delay') }),
         });
-        settings.bind('autostart-delay', autostartDelayRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        autostartDelayRow.connect('notify::value', () => settings.set_int('autostart-delay', autostartDelayRow.value));
         autostartDelayRow.set_sensitive(autostartRow.active);
         autostartRow.connect('notify::active', () => autostartDelayRow.set_sensitive(autostartRow.active));
         startupGroup.add(autostartDelayRow);
