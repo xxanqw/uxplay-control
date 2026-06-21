@@ -129,6 +129,59 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
             if (_autostartConn2) settings.disconnect(_autostartConn2);
         });
 
+        const behaviorGroup = new Adw.PreferencesGroup({ title: _('Behavior') });
+        addComboRow(behaviorGroup, _('Screensaver behavior'), 'screensaver',
+            [_('Default'), _('On during active mirroring'), _('Always on')]);
+        const resetTimeoutRow = new Adw.SpinRow({
+            title: _('Reset timeout'),
+            subtitle: _('Seconds of inactivity before UXPlay resets the connection.'),
+            adjustment: new Gtk.Adjustment({ lower: 0, upper: 300, step_increment: 5, value: settings.get_int('reset-timeout') }),
+        });
+        resetTimeoutRow.connect('notify::value', () => settings.set_int('reset-timeout', resetTimeoutRow.value));
+        behaviorGroup.add(resetTimeoutRow);
+        generalPage.add(behaviorGroup);
+
+        const loggingGroup = new Adw.PreferencesGroup({ title: _('Logging') });
+        addSwitchRow(loggingGroup, _('Debug logging'), 'debug');
+        const maxLogLinesRow = new Adw.SpinRow({
+            title: _('Maximum log lines'),
+            subtitle: _('Older entries are dropped from the log when this limit is reached.'),
+            adjustment: new Gtk.Adjustment({ lower: 100, upper: 50000, step_increment: 100, value: settings.get_int('max-log-lines') }),
+            digits: 0,
+        });
+        maxLogLinesRow.connect('notify::value', () => settings.set_int('max-log-lines', maxLogLinesRow.value));
+        loggingGroup.add(maxLogLinesRow);
+        generalPage.add(loggingGroup);
+
+        const maintenanceGroup = new Adw.PreferencesGroup({
+            title: _('Maintenance'),
+            description: _('Restore every preference to its schema default. The action cannot be undone.'),
+        });
+        const resetAllRow = new Adw.ActionRow({ title: _('Reset all settings to defaults') });
+        const resetAllBtn = new Gtk.Button({ label: _('Reset…'), css_classes: ['destructive-action'] });
+        resetAllBtn.connect('clicked', () => {
+            const dialog = new Adw.AlertDialog({
+                heading: _('Reset all settings?'),
+                body: _('This will reset every UXPlay Control preference to its default value. The action cannot be undone.'),
+            });
+            dialog.add_response('cancel', _('Cancel'));
+            dialog.add_response('reset', _('Reset'));
+            dialog.set_response_appearance('reset', Adw.ResponseAppearance.DESTRUCTIVE);
+            dialog.connect('response', (_, response) => {
+                if (response !== 'reset') return;
+                const schema = settings.settings_schema;
+                if (!schema) return;
+                for (const key of schema.list_keys()) {
+                    try { settings.reset(key); } catch (_) {}
+                }
+            });
+            dialog.present(window);
+        });
+        resetAllRow.add_suffix(resetAllBtn);
+        resetAllRow.set_activatable_widget(resetAllBtn);
+        maintenanceGroup.add(resetAllRow);
+        generalPage.add(maintenanceGroup);
+
         const serverPage = new Adw.PreferencesPage({ name: 'server-security', title: _('Server & Security'), icon_name: 'network-server-symbolic' });
 
         const identityGroup = new Adw.PreferencesGroup({ title: _('Server Identity') });
@@ -203,7 +256,6 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         addSwitchRow(geomGroup, _('Overscan Mode'), 'overscan');
         addSwitchRow(geomGroup, _('Disable Video (Audio Only)'), 'disable-video');
         addSwitchRow(geomGroup, _('Keep Window Open on Exit'), 'no-close-window');
-        addComboRow(geomGroup, _('Screensaver Override'), 'screensaver', [_('Default'), _('On during active mirroring'), _('Always on')]);
         videoPage.add(geomGroup);
 
         addDocLink(videoPage, _('Video Documentation'), 'https://github.com/FDH2/UxPlay#video-and-audio-options');
@@ -268,10 +320,6 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         addSwitchRow(diagGroup, _('Print FPS Telemetry'), 'fps-data');
         addTextRow(diagGroup, _('Video Dump Path'), 'video-dump-path');
         addTextRow(diagGroup, _('Audio Dump Path'), 'audio-dump-path');
-        const resetRow = new Adw.SpinRow({ title: _('Reset Timeout'), adjustment: new Gtk.Adjustment({ lower: 0, upper: 300, step_increment: 5, value: settings.get_int('reset-timeout') }) });
-        resetRow.connect('notify::value', () => settings.set_int('reset-timeout', resetRow.value));
-        diagGroup.add(resetRow);
-        addSwitchRow(diagGroup, _('Debug Logging'), 'debug');
         advancedPage.add(diagGroup);
 
         addDocLink(advancedPage, _('Advanced Documentation'), 'https://github.com/FDH2/UxPlay#usage');
@@ -284,10 +332,6 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         logsPage.add(logDisplayGroup);
 
         const logControlsGroup = new Adw.PreferencesGroup({ title: _('Log Management') });
-        const maxLogLinesRow = new Adw.SpinRow({ title: _('Maximum Log Lines'), adjustment: new Gtk.Adjustment({ lower: 100, upper: 50000, step_increment: 100, value: settings.get_int('max-log-lines') }), digits: 0 });
-        maxLogLinesRow.connect('notify::value', () => settings.set_int('max-log-lines', maxLogLinesRow.value));
-        logControlsGroup.add(maxLogLinesRow);
-
         const clearLogsActionRow = new Adw.ActionRow({ title: _('Clear All Stored Logs') });
         const clearButtonForAction = new Gtk.Button({ label: _('Clear') });
         clearButtonForAction.connect('clicked', () => settings.set_strv('uxplay-logs', []));
