@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-21 21:49+0200\n"
+"POT-Creation-Date: 2026-06-21 22:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,39 +17,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension.js:203 extension.js:218
+#: extension.js:237 extension.js:252
 msgid "UXPlay Control"
 msgstr ""
 
-#: extension.js:203
+#: extension.js:237
 msgid "⚠ Could not create config file at ~/.config/uxplay-control/uxplayrc."
 msgstr ""
 
-#: extension.js:209
+#: extension.js:243
 msgid "UXPlay Control — Upgraded to v8"
 msgstr ""
 
-#: extension.js:241 extension.js:496
+#: extension.js:275 extension.js:521
 msgid "Status: Stopped"
 msgstr ""
 
-#: extension.js:245
+#: extension.js:279
 msgid "Preferences"
 msgstr ""
 
-#: extension.js:482
+#: extension.js:507
 msgid "Status: UXPlay not found"
 msgstr ""
 
-#: extension.js:483 extension.js:497
+#: extension.js:508 extension.js:522
 msgid "Start UXPlay"
 msgstr ""
 
-#: extension.js:491
+#: extension.js:516
 msgid "Status: Running"
 msgstr ""
 
-#: extension.js:492
+#: extension.js:517
 msgid "Stop UXPlay"
 msgstr ""
 

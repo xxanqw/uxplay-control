@@ -19,6 +19,40 @@ function _configFile() {
 const CURRENT_SCHEMA_VERSION = 8;
 const INTERNAL_SETTINGS_KEYS = new Set(['schema-version', 'uxplay-logs', 'first-run-completed', 'autostart-on-login', 'autostart-delay']);
 
+function _findRunningUxplayPid() {
+    try {
+        const procDir = Gio.File.new_for_path('/proc');
+        const enumerator = procDir.enumerate_children(
+            'standard::name',
+            Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
+            null
+        );
+        let info;
+        while ((info = enumerator.next_file(null)) !== null) {
+            const name = info.get_name();
+            if (!/^\d+$/.test(name)) continue;
+            const pid = parseInt(name, 10);
+            try {
+                const commFile = Gio.File.new_for_path(`/proc/${pid}/comm`);
+                const [, contents] = commFile.load_contents(null);
+                const comm = new TextDecoder().decode(contents).trim();
+                if (comm === 'uxplay') return pid;
+            } catch (_) {}
+        }
+    } catch (e) {
+        console.error(`UXPlayControl: failed to scan /proc: ${e.message}`);
+    }
+    return null;
+}
+
+function _sendSignalToPid(pid, signal) {
+    const launcher = new Gio.SubprocessLauncher({ flags: Gio.SubprocessFlags.NONE });
+    const proc = launcher.spawnv(['kill', `-${signal}`, String(pid)]);
+    proc.wait_async(null, (p, res) => {
+        try { p.wait_finish(res); } catch (_) {}
+    });
+}
+
 function _buildConfigContent(settings) {
     const ts = GLib.DateTime.new_now_local().format('%Y-%m-%d %H:%M:%S');
     const lines = [
@@ -255,16 +289,7 @@ const UXPlayIndicator = GObject.registerClass(
         }
 
         _detectExistingUxplayPid() {
-            try {
-                const [, out] = GLib.spawn_command_line_sync('pidof -x uxplay');
-                const output = out.toString().trim();
-                if (!output) return null;
-                const pid = parseInt(output.split(/\s+/)[0], 10);
-                if (!Number.isInteger(pid) || pid <= 0) return null;
-                return pid;
-            } catch (e) {
-                return null;
-            }
+            return _findRunningUxplayPid();
         }
 
         _adoptExistingUxplay(pid) {
@@ -448,14 +473,14 @@ const UXPlayIndicator = GObject.registerClass(
                 if (this._uxplaySubprocess) {
                     try { this._uxplaySubprocess.send_signal(15); } catch (_) {}
                 } else if (this._uxplayProcess) {
-                    try { GLib.spawn_command_line_sync(`kill -15 ${this._uxplayProcess}`); } catch (_) {}
+                    _sendSignalToPid(this._uxplayProcess, 15);
                 }
             };
             const forceKill = () => {
                 if (this._uxplaySubprocess) {
                     try { this._uxplaySubprocess.force_exit(); } catch (_) {}
                 } else if (this._uxplayProcess) {
-                    try { GLib.spawn_command_line_sync(`kill -9 ${this._uxplayProcess}`); } catch (_) {}
+                    _sendSignalToPid(this._uxplayProcess, 9);
                 }
             };
 
