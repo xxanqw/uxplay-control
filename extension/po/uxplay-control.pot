@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-21 20:39+0200\n"
+"POT-Creation-Date: 2026-06-21 20:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,557 +97,557 @@ msgstr ""
 msgid "Installation help"
 msgstr ""
 
-#: prefs.js:132
-msgid "Behavior"
+#: prefs.js:132 prefs.js:192
+msgid "Server Identity"
 msgstr ""
 
 #: prefs.js:133
-msgid "Screensaver behavior"
+msgid "Server Name"
 msgstr ""
 
 #: prefs.js:134
-msgid "Default"
-msgstr ""
-
-#: prefs.js:134
-msgid "On during active mirroring"
-msgstr ""
-
-#: prefs.js:134
-msgid "Always on"
-msgstr ""
-
-#: prefs.js:136
-msgid "Reset timeout"
+msgid "No Hostname Suffix"
 msgstr ""
 
 #: prefs.js:137
+msgid "Behavior"
+msgstr ""
+
+#: prefs.js:138
+msgid "Screensaver behavior"
+msgstr ""
+
+#: prefs.js:139
+msgid "Default"
+msgstr ""
+
+#: prefs.js:139
+msgid "On during active mirroring"
+msgstr ""
+
+#: prefs.js:139
+msgid "Always on"
+msgstr ""
+
+#: prefs.js:141
+msgid "Reset timeout"
+msgstr ""
+
+#: prefs.js:142
 msgid "Seconds of inactivity before UXPlay resets the connection."
 msgstr ""
 
-#: prefs.js:144
+#: prefs.js:149
 msgid "Logging"
 msgstr ""
 
-#: prefs.js:145
+#: prefs.js:150
 msgid "Debug logging"
 msgstr ""
 
-#: prefs.js:147
+#: prefs.js:152
 msgid "Maximum log lines"
 msgstr ""
 
-#: prefs.js:148
+#: prefs.js:153
 msgid "Older entries are dropped from the log when this limit is reached."
 msgstr ""
 
-#: prefs.js:157
+#: prefs.js:162
 msgid "Maintenance"
 msgstr ""
 
-#: prefs.js:158
+#: prefs.js:163
 msgid ""
 "Restore every preference to its schema default. The action cannot be undone."
 msgstr ""
 
-#: prefs.js:160
+#: prefs.js:165
 msgid "Reset all settings to defaults"
 msgstr ""
 
-#: prefs.js:161
+#: prefs.js:166
 msgid "Reset…"
 msgstr ""
 
-#: prefs.js:164
+#: prefs.js:169
 msgid "Reset all settings?"
 msgstr ""
 
-#: prefs.js:165
+#: prefs.js:170
 msgid ""
 "This will reset every UXPlay Control preference to its default value. The "
 "action cannot be undone."
 msgstr ""
 
-#: prefs.js:167
+#: prefs.js:172
 msgid "Cancel"
 msgstr ""
 
-#: prefs.js:168
+#: prefs.js:173
 msgid "Reset"
 msgstr ""
 
-#: prefs.js:185
+#: prefs.js:190
 msgid "Server & Security"
 msgstr ""
 
-#: prefs.js:187
-msgid "Server Identity"
-msgstr ""
-
-#: prefs.js:188
-msgid "Server Name"
-msgstr ""
-
-#: prefs.js:189
-msgid "No Hostname Suffix"
-msgstr ""
-
-#: prefs.js:190
+#: prefs.js:193
 msgid "MAC Address (Device ID)"
 msgstr ""
 
-#: prefs.js:191
+#: prefs.js:194
 msgid "BLE Beacon File"
 msgstr ""
 
-#: prefs.js:194
+#: prefs.js:197
 msgid "Network & Ports"
 msgstr ""
 
-#: prefs.js:195
+#: prefs.js:198
 msgid "Legacy AirPlay Ports"
 msgstr ""
 
-#: prefs.js:196
+#: prefs.js:199
 msgid "Use Custom Ports"
 msgstr ""
 
-#: prefs.js:197
+#: prefs.js:200
 msgid "Port Configuration"
 msgstr ""
 
-#: prefs.js:202
+#: prefs.js:205
 msgid "Security Settings"
 msgstr ""
 
-#: prefs.js:203 prefs.js:254 prefs.js:255
+#: prefs.js:206 prefs.js:257 prefs.js:258
 msgid "None"
 msgstr ""
 
-#: prefs.js:203
+#: prefs.js:206
 msgid "PIN Code"
 msgstr ""
 
-#: prefs.js:203 prefs.js:209
+#: prefs.js:206 prefs.js:212
 msgid "Password"
 msgstr ""
 
-#: prefs.js:204
+#: prefs.js:207
 msgid "Security Mode"
 msgstr ""
 
-#: prefs.js:208
+#: prefs.js:211
 msgid "PIN Code (4-digit)"
 msgstr ""
 
-#: prefs.js:223
+#: prefs.js:226
 msgid "Client Registry Path"
 msgstr ""
 
-#: prefs.js:224
+#: prefs.js:227
 msgid "Custom Key Path"
 msgstr ""
 
-#: prefs.js:227
+#: prefs.js:230
 msgid "Access Control"
 msgstr ""
 
-#: prefs.js:228
+#: prefs.js:231
 msgid "Whitelist Mode (Restrict)"
 msgstr ""
 
-#: prefs.js:229
+#: prefs.js:232
 msgid "Allowed Devices (CSV)"
 msgstr ""
 
-#: prefs.js:230
+#: prefs.js:233
 msgid "Blocked Devices (CSV)"
 msgstr ""
 
-#: prefs.js:231
+#: prefs.js:234
 msgid "Drop on New Connection"
 msgstr ""
 
-#: prefs.js:232
+#: prefs.js:235
 msgid "Clear Frame on Reset"
 msgstr ""
 
-#: prefs.js:235
+#: prefs.js:238
 msgid "Server and Security Documentation"
 msgstr ""
 
-#: prefs.js:237
+#: prefs.js:240
 msgid "Video"
 msgstr ""
 
-#: prefs.js:239
+#: prefs.js:242
 msgid "Display Settings"
 msgstr ""
 
-#: prefs.js:240
+#: prefs.js:243
 msgid "H265 Support"
 msgstr ""
 
-#: prefs.js:241
+#: prefs.js:244
 msgid "1920x1080@60 (16:9 Desktop)"
 msgstr ""
 
-#: prefs.js:241
+#: prefs.js:244
 msgid "3840x2160@60 (4K 16:9 Desktop)"
 msgstr ""
 
-#: prefs.js:241
+#: prefs.js:244
 msgid "1280x720@60 (HD 16:9 Desktop)"
 msgstr ""
 
-#: prefs.js:241
+#: prefs.js:244
 msgid "1170x2532@60 (iPhone 12/13/14 Pro)"
 msgstr ""
 
-#: prefs.js:241
+#: prefs.js:244
 msgid "1290x2796@60 (iPhone 14/15 Pro Max)"
 msgstr ""
 
-#: prefs.js:241
+#: prefs.js:244
 msgid "1080x1920@60 (1080p Portrait)"
 msgstr ""
 
-#: prefs.js:241
+#: prefs.js:244
 msgid "1920x1440@60 (4:3 iPad)"
 msgstr ""
 
-#: prefs.js:241
+#: prefs.js:244
 msgid "2732x2048@60 (iPad Pro 12.9\")"
 msgstr ""
 
-#: prefs.js:241
+#: prefs.js:244
 msgid "Custom"
 msgstr ""
 
-#: prefs.js:242
+#: prefs.js:245
 msgid "Resolution"
 msgstr ""
 
-#: prefs.js:243
+#: prefs.js:246
 msgid "Custom Resolution"
 msgstr ""
 
-#: prefs.js:247
+#: prefs.js:250
 msgid "FPS Limit"
 msgstr ""
 
-#: prefs.js:247
+#: prefs.js:250
 msgid "0 = unlimited"
 msgstr ""
 
-#: prefs.js:252
+#: prefs.js:255
 msgid "Geometry & Windows"
 msgstr ""
 
-#: prefs.js:253
+#: prefs.js:256
 msgid "Fullscreen Mode"
 msgstr ""
 
-#: prefs.js:254
+#: prefs.js:257
 msgid "Video Flip"
 msgstr ""
 
-#: prefs.js:254
+#: prefs.js:257
 msgid "Horizontal"
 msgstr ""
 
-#: prefs.js:254
+#: prefs.js:257
 msgid "Vertical"
 msgstr ""
 
-#: prefs.js:254
+#: prefs.js:257
 msgid "Inversion"
 msgstr ""
 
-#: prefs.js:255
+#: prefs.js:258
 msgid "Video Rotation"
 msgstr ""
 
-#: prefs.js:255
+#: prefs.js:258
 msgid "Right (90°)"
 msgstr ""
 
-#: prefs.js:255
+#: prefs.js:258
 msgid "Left (-90°)"
 msgstr ""
 
-#: prefs.js:256
+#: prefs.js:259
 msgid "Overscan Mode"
 msgstr ""
 
-#: prefs.js:257
+#: prefs.js:260
 msgid "Disable Video (Audio Only)"
 msgstr ""
 
-#: prefs.js:258
+#: prefs.js:261
 msgid "Keep Window Open on Exit"
 msgstr ""
 
-#: prefs.js:261
+#: prefs.js:264
 msgid "Video Documentation"
 msgstr ""
 
-#: prefs.js:263
+#: prefs.js:266
 msgid "Audio & HLS"
 msgstr ""
 
-#: prefs.js:265
+#: prefs.js:268
 msgid "Audio Synchronization"
 msgstr ""
 
-#: prefs.js:266
+#: prefs.js:269
 msgid "Video Sync"
 msgstr ""
 
-#: prefs.js:267
+#: prefs.js:270
 msgid "Async Audio (Audio-only)"
 msgstr ""
 
-#: prefs.js:268
+#: prefs.js:271
 msgid "Audio Latency"
 msgstr ""
 
-#: prefs.js:273
+#: prefs.js:276
 msgid "Volume Control"
 msgstr ""
 
-#: prefs.js:274
+#: prefs.js:277
 msgid "Volume Multiplier"
 msgstr ""
 
-#: prefs.js:274
+#: prefs.js:277
 msgid "Does not affect source device volume"
 msgstr ""
 
-#: prefs.js:277
+#: prefs.js:280
 msgid "Decibel Limits (l:h)"
 msgstr ""
 
-#: prefs.js:278
+#: prefs.js:281
 msgid "Logarithmic Taper"
 msgstr ""
 
-#: prefs.js:281
+#: prefs.js:284
 msgid "Metadata Extraction"
 msgstr ""
 
-#: prefs.js:282
+#: prefs.js:285
 msgid "Cover Art Dump Path"
 msgstr ""
 
-#: prefs.js:283
+#: prefs.js:286
 msgid "Metadata Dump Path"
 msgstr ""
 
-#: prefs.js:284
+#: prefs.js:287
 msgid "DACP Telemetry Path"
 msgstr ""
 
-#: prefs.js:287
+#: prefs.js:290
 msgid "HTTP Live Streaming (HLS)"
 msgstr ""
 
-#: prefs.js:288
+#: prefs.js:291
 msgid "Enable HLS Interception"
 msgstr ""
 
-#: prefs.js:289
+#: prefs.js:292
 msgid "Language Code"
 msgstr ""
 
-#: prefs.js:292
+#: prefs.js:295
 msgid "Audio and HLS Documentation"
 msgstr ""
 
-#: prefs.js:294
+#: prefs.js:297
 msgid "Advanced"
 msgstr ""
 
-#: prefs.js:297
+#: prefs.js:300
 msgid "Configuration File"
 msgstr ""
 
-#: prefs.js:298
+#: prefs.js:301
 msgid ""
 "UXPlay Control stores runtime settings in a dedicated file.\n"
 "Path: ~/.config/uxplay-control/uxplayrc\n"
 "Changes made here are automatically synced to this file."
 msgstr ""
 
-#: prefs.js:302
+#: prefs.js:305
 msgid "GStreamer Pipeline"
 msgstr ""
 
-#: prefs.js:303
+#: prefs.js:306
 msgid "Parser Element"
 msgstr ""
 
-#: prefs.js:304
+#: prefs.js:307
 msgid "Decoder Element"
 msgstr ""
 
-#: prefs.js:305
+#: prefs.js:308
 msgid "Converter Element"
 msgstr ""
 
-#: prefs.js:306
+#: prefs.js:309
 msgid "Video Sink"
 msgstr ""
 
-#: prefs.js:307
+#: prefs.js:310
 msgid "Audio Sink"
 msgstr ""
 
-#: prefs.js:308
+#: prefs.js:311
 msgid "Force SW Decode"
 msgstr ""
 
-#: prefs.js:309
+#: prefs.js:312
 msgid "Prioritize Video4Linux2"
 msgstr ""
 
-#: prefs.js:310
+#: prefs.js:313
 msgid "Color Space Matrix"
 msgstr ""
 
-#: prefs.js:310
+#: prefs.js:313
 msgid "Auto"
 msgstr ""
 
-#: prefs.js:310
+#: prefs.js:313
 msgid "BT.709"
 msgstr ""
 
-#: prefs.js:310
+#: prefs.js:313
 msgid "sRGB"
 msgstr ""
 
-#: prefs.js:313
+#: prefs.js:316
 msgid "Stream Exports & Muxing"
 msgstr ""
 
-#: prefs.js:314
+#: prefs.js:317
 msgid "RTP Video Pipeline"
 msgstr ""
 
-#: prefs.js:315
+#: prefs.js:318
 msgid "RTP Audio Pipeline"
 msgstr ""
 
-#: prefs.js:316
+#: prefs.js:319
 msgid "Encode to MP4"
 msgstr ""
 
-#: prefs.js:319
+#: prefs.js:322
 msgid "Diagnostics & Timeouts"
 msgstr ""
 
-#: prefs.js:320
+#: prefs.js:323
 msgid "Print FPS Telemetry"
 msgstr ""
 
-#: prefs.js:321
+#: prefs.js:324
 msgid "Video Dump Path"
 msgstr ""
 
-#: prefs.js:322
+#: prefs.js:325
 msgid "Audio Dump Path"
 msgstr ""
 
-#: prefs.js:325
+#: prefs.js:328
 msgid "Advanced Documentation"
 msgstr ""
 
-#: prefs.js:327
+#: prefs.js:330
 msgid "Logs"
 msgstr ""
 
-#: prefs.js:328
+#: prefs.js:331
 msgid "Application Logs"
 msgstr ""
 
-#: prefs.js:334
+#: prefs.js:337
 msgid "Log Management"
 msgstr ""
 
-#: prefs.js:335
+#: prefs.js:338
 msgid "Clear All Stored Logs"
 msgstr ""
 
-#: prefs.js:336
+#: prefs.js:339
 msgid "Clear"
 msgstr ""
 
-#: prefs.js:343
+#: prefs.js:346
 msgid "About"
 msgstr ""
 
-#: prefs.js:345
+#: prefs.js:348
 msgid "Extension Information"
 msgstr ""
 
-#: prefs.js:347
+#: prefs.js:350
 msgid "Name"
 msgstr ""
 
-#: prefs.js:348
+#: prefs.js:351
 msgid "Description"
 msgstr ""
 
-#: prefs.js:349
+#: prefs.js:352
 msgid "Version"
 msgstr ""
 
-#: prefs.js:350
+#: prefs.js:353
 msgid "UUID"
 msgstr ""
 
-#: prefs.js:351
+#: prefs.js:354
 msgid "Supported GNOME Versions"
 msgstr ""
 
-#: prefs.js:354
+#: prefs.js:357
 msgid "Homepage"
 msgstr ""
 
-#: prefs.js:355
+#: prefs.js:358
 msgid "Open"
 msgstr ""
 
-#: prefs.js:361
+#: prefs.js:364
 msgid "Developer Information"
 msgstr ""
 
-#: prefs.js:379
+#: prefs.js:382
 msgid "xxanqw"
 msgstr ""
 
-#: prefs.js:383
+#: prefs.js:386
 msgid "smol ukrainian dev🤫"
 msgstr ""
 
-#: prefs.js:387
+#: prefs.js:390
 msgid "PayPal: travix10x@icloud.com"
 msgstr ""
 
-#: prefs.js:389
+#: prefs.js:392
 msgid "Support via Bank"
 msgstr ""
 
-#: prefs.js:392
+#: prefs.js:395
 msgid "Project GitHub"
 msgstr ""
 
-#: prefs.js:408 prefs.js:411
+#: prefs.js:411 prefs.js:414
 msgid "UXPlay Not Found"
 msgstr ""
 
-#: prefs.js:412
+#: prefs.js:415
 msgid ""
 "UXPlay is not installed or not in your system's PATH.\n"
 "\n"

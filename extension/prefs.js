@@ -129,6 +129,11 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
             if (_autostartConn2) settings.disconnect(_autostartConn2);
         });
 
+        const identityGroup = new Adw.PreferencesGroup({ title: _('Server Identity') });
+        addTextRow(identityGroup, _('Server Name'), 'server-name');
+        addSwitchRow(identityGroup, _('No Hostname Suffix'), 'no-hostname');
+        generalPage.add(identityGroup);
+
         const behaviorGroup = new Adw.PreferencesGroup({ title: _('Behavior') });
         addComboRow(behaviorGroup, _('Screensaver behavior'), 'screensaver',
             [_('Default'), _('On during active mirroring'), _('Always on')]);
@@ -185,8 +190,6 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         const serverPage = new Adw.PreferencesPage({ name: 'server-security', title: _('Server & Security'), icon_name: 'network-server-symbolic' });
 
         const identityGroup = new Adw.PreferencesGroup({ title: _('Server Identity') });
-        addTextRow(identityGroup, _('Server Name'), 'server-name');
-        addSwitchRow(identityGroup, _('No Hostname Suffix'), 'no-hostname');
         addTextRow(identityGroup, _('MAC Address (Device ID)'), 'mac-address');
         addTextRow(identityGroup, _('BLE Beacon File'), 'ble-beacon');
         serverPage.add(identityGroup);
