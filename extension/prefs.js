@@ -5,6 +5,7 @@ import GLib from 'gi://GLib';
 import Gdk from 'gi://Gdk';
 import GdkPixbuf from 'gi://GdkPixbuf';
 import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import { syncAutostart as _syncAutostart } from './autostart.js';
 
 export default class UXPlayControlPreferences extends ExtensionPreferences {
     constructor(metadata) {
@@ -79,14 +80,119 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
             page.add(docGroup);
         };
 
-        const serverPage = new Adw.PreferencesPage({ title: _('Server & Security'), icon_name: 'network-server-symbolic' });
+        const generalPage = new Adw.PreferencesPage({
+            name: 'general',
+            title: _('General'),
+            icon_name: 'preferences-system-symbolic',
+        });
 
         const identityGroup = new Adw.PreferencesGroup({ title: _('Server Identity') });
         addTextRow(identityGroup, _('Server Name'), 'server-name');
         addSwitchRow(identityGroup, _('No Hostname Suffix'), 'no-hostname');
-        addTextRow(identityGroup, _('MAC Address (Device ID)'), 'mac-address');
-        addTextRow(identityGroup, _('BLE Beacon File'), 'ble-beacon');
-        serverPage.add(identityGroup);
+        generalPage.add(identityGroup);
+
+        const startupGroup = new Adw.PreferencesGroup({
+            title: _('Startup'),
+            description: _('Launch UXPlay automatically when you log in.'),
+        });
+        generalPage.add(startupGroup);
+
+        const autostartRow = new Adw.SwitchRow({
+            title: _('Start UXPlay on login'),
+            subtitle: _('Requires the uxplay binary to be installed.'),
+        });
+        settings.bind('autostart-on-login', autostartRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        startupGroup.add(autostartRow);
+
+        const autostartDelayRow = new Adw.SpinRow({
+            title: _('Autostart delay'),
+            subtitle: _('Seconds to wait after login before launching UXPlay.'),
+            adjustment: new Gtk.Adjustment({ lower: 0, upper: 300, step_increment: 5, value: settings.get_int('autostart-delay') }),
+        });
+        autostartDelayRow.connect('notify::value', () => settings.set_int('autostart-delay', autostartDelayRow.value));
+        autostartDelayRow.set_sensitive(autostartRow.active);
+        autostartRow.connect('notify::active', () => autostartDelayRow.set_sensitive(autostartRow.active));
+        startupGroup.add(autostartDelayRow);
+
+        if (!isUxPlayAvailable) {
+            const banner = new Adw.Banner({
+                title: _('The uxplay binary was not found in $PATH.'),
+                button_label: _('Installation help'),
+            });
+            banner.connect('button-clicked', () => {
+                try { Gio.AppInfo.launch_default_for_uri('https://github.com/FDH2/UxPlay#after-installation', null); }
+                catch (_) {}
+            });
+            if (typeof generalPage.set_banner === 'function') generalPage.set_banner(banner);
+        }
+
+        _syncAutostart(settings);
+        const _autostartConn1 = settings.connect('changed::autostart-on-login', () => _syncAutostart(settings));
+        const _autostartConn2 = settings.connect('changed::autostart-delay', () => _syncAutostart(settings));
+        window.connect('close-request', () => {
+            if (_autostartConn1) settings.disconnect(_autostartConn1);
+            if (_autostartConn2) settings.disconnect(_autostartConn2);
+        });
+
+        const behaviorGroup = new Adw.PreferencesGroup({ title: _('Behavior') });
+        addComboRow(behaviorGroup, _('Screensaver behavior'), 'screensaver',
+            [_('Default'), _('On during active mirroring'), _('Always on')]);
+        const resetTimeoutRow = new Adw.SpinRow({
+            title: _('Reset timeout'),
+            subtitle: _('Seconds of inactivity before UXPlay resets the connection.'),
+            adjustment: new Gtk.Adjustment({ lower: 0, upper: 300, step_increment: 5, value: settings.get_int('reset-timeout') }),
+        });
+        resetTimeoutRow.connect('notify::value', () => settings.set_int('reset-timeout', resetTimeoutRow.value));
+        behaviorGroup.add(resetTimeoutRow);
+        generalPage.add(behaviorGroup);
+
+        const loggingGroup = new Adw.PreferencesGroup({ title: _('Logging') });
+        addSwitchRow(loggingGroup, _('Debug logging'), 'debug');
+        const maxLogLinesRow = new Adw.SpinRow({
+            title: _('Maximum log lines'),
+            subtitle: _('Older entries are dropped from the log when this limit is reached.'),
+            adjustment: new Gtk.Adjustment({ lower: 100, upper: 50000, step_increment: 100, value: settings.get_int('max-log-lines') }),
+            digits: 0,
+        });
+        maxLogLinesRow.connect('notify::value', () => settings.set_int('max-log-lines', maxLogLinesRow.value));
+        loggingGroup.add(maxLogLinesRow);
+        generalPage.add(loggingGroup);
+
+        const maintenanceGroup = new Adw.PreferencesGroup({
+            title: _('Maintenance'),
+            description: _('Restore every preference to its schema default. The action cannot be undone.'),
+        });
+        const resetAllRow = new Adw.ActionRow({ title: _('Reset all settings to defaults') });
+        const resetAllBtn = new Gtk.Button({ label: _('Reset…'), css_classes: ['destructive-action'] });
+        resetAllBtn.connect('clicked', () => {
+            const dialog = new Adw.AlertDialog({
+                heading: _('Reset all settings?'),
+                body: _('This will reset every UXPlay Control preference to its default value. The action cannot be undone.'),
+            });
+            dialog.add_response('cancel', _('Cancel'));
+            dialog.add_response('reset', _('Reset'));
+            dialog.set_response_appearance('reset', Adw.ResponseAppearance.DESTRUCTIVE);
+            dialog.connect('response', (_, response) => {
+                if (response !== 'reset') return;
+                const schema = settings.settings_schema;
+                if (!schema) return;
+                for (const key of schema.list_keys()) {
+                    try { settings.reset(key); } catch (_) {}
+                }
+            });
+            dialog.present(window);
+        });
+        resetAllRow.add_suffix(resetAllBtn);
+        resetAllRow.set_activatable_widget(resetAllBtn);
+        maintenanceGroup.add(resetAllRow);
+        generalPage.add(maintenanceGroup);
+
+        const serverPage = new Adw.PreferencesPage({ name: 'server-security', title: _('Server & Security'), icon_name: 'network-server-symbolic' });
+
+        const hardwareGroup = new Adw.PreferencesGroup({ title: _('Hardware Identity') });
+        addTextRow(hardwareGroup, _('MAC Address (Device ID)'), 'mac-address');
+        addTextRow(hardwareGroup, _('BLE Beacon File'), 'ble-beacon');
+        serverPage.add(hardwareGroup);
 
         const networkGroup = new Adw.PreferencesGroup({ title: _('Network & Ports') });
         addSwitchRow(networkGroup, _('Legacy AirPlay Ports'), 'legacy-ports');
@@ -131,7 +237,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         
         addDocLink(serverPage, _('Server and Security Documentation'), 'https://github.com/FDH2/UxPlay#usage');
 
-        const videoPage = new Adw.PreferencesPage({ title: _('Video'), icon_name: 'video-display-symbolic' });
+        const videoPage = new Adw.PreferencesPage({ name: 'video', title: _('Video'), icon_name: 'video-display-symbolic' });
 
         const displayGroup = new Adw.PreferencesGroup({ title: _('Display Settings') });
         addSwitchRow(displayGroup, _('H265 Support'), 'h265');
@@ -153,12 +259,11 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         addSwitchRow(geomGroup, _('Overscan Mode'), 'overscan');
         addSwitchRow(geomGroup, _('Disable Video (Audio Only)'), 'disable-video');
         addSwitchRow(geomGroup, _('Keep Window Open on Exit'), 'no-close-window');
-        addComboRow(geomGroup, _('Screensaver Override'), 'screensaver', [_('Default'), _('On during active mirroring'), _('Always on')]);
         videoPage.add(geomGroup);
 
-        addDocLink(videoPage, _('Video Documentation'), 'https://github.com/FDH2/UxPlay#video-and-audio-options');
+        addDocLink(videoPage, _('Video Documentation'), 'https://github.com/FDH2/UxPlay#usage');
 
-        const audioPage = new Adw.PreferencesPage({ title: _('Audio & HLS'), icon_name: 'audio-volume-high-symbolic' });
+        const audioPage = new Adw.PreferencesPage({ name: 'audio-hls', title: _('Audio & HLS'), icon_name: 'audio-volume-high-symbolic' });
 
         const audioSyncGroup = new Adw.PreferencesGroup({ title: _('Audio Synchronization') });
         addSwitchRow(audioSyncGroup, _('Video Sync'), 'vsync');
@@ -187,9 +292,9 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         addTextRow(hlsGroup, _('Language Code'), 'hls-lang');
         audioPage.add(hlsGroup);
 
-        addDocLink(audioPage, _('Audio and HLS Documentation'), 'https://github.com/FDH2/UxPlay#video-and-audio-options');
+        addDocLink(audioPage, _('Audio and HLS Documentation'), 'https://github.com/FDH2/UxPlay#usage');
 
-        const advancedPage = new Adw.PreferencesPage({ title: _('Advanced'), icon_name: 'preferences-other-symbolic' });
+        const advancedPage = new Adw.PreferencesPage({ name: 'advanced', title: _('Advanced'), icon_name: 'preferences-other-symbolic' });
 
         const configInfoGroup = new Adw.PreferencesGroup({
             title: _('Configuration File'),
@@ -218,15 +323,11 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         addSwitchRow(diagGroup, _('Print FPS Telemetry'), 'fps-data');
         addTextRow(diagGroup, _('Video Dump Path'), 'video-dump-path');
         addTextRow(diagGroup, _('Audio Dump Path'), 'audio-dump-path');
-        const resetRow = new Adw.SpinRow({ title: _('Reset Timeout'), adjustment: new Gtk.Adjustment({ lower: 0, upper: 300, step_increment: 5, value: settings.get_int('reset-timeout') }) });
-        resetRow.connect('notify::value', () => settings.set_int('reset-timeout', resetRow.value));
-        diagGroup.add(resetRow);
-        addSwitchRow(diagGroup, _('Debug Logging'), 'debug');
         advancedPage.add(diagGroup);
 
         addDocLink(advancedPage, _('Advanced Documentation'), 'https://github.com/FDH2/UxPlay#usage');
 
-        const logsPage = new Adw.PreferencesPage({ title: _('Logs'), icon_name: 'document-properties-symbolic' });
+        const logsPage = new Adw.PreferencesPage({ name: 'logs', title: _('Logs'), icon_name: 'document-properties-symbolic' });
         const logDisplayGroup = new Adw.PreferencesGroup({ title: _('Application Logs') });
         const logTextView = new Gtk.TextView({ editable: false, cursor_visible: false, wrap_mode: Gtk.WrapMode.WORD_CHAR, vexpand: true, hexpand: true });
         const logScrolledWindow = new Gtk.ScrolledWindow({ child: logTextView, hscrollbar_policy: Gtk.PolicyType.AUTOMATIC, vscrollbar_policy: Gtk.PolicyType.AUTOMATIC, min_content_height: 200 });
@@ -234,10 +335,6 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         logsPage.add(logDisplayGroup);
 
         const logControlsGroup = new Adw.PreferencesGroup({ title: _('Log Management') });
-        const maxLogLinesRow = new Adw.SpinRow({ title: _('Maximum Log Lines'), adjustment: new Gtk.Adjustment({ lower: 100, upper: 50000, step_increment: 100, value: settings.get_int('max-log-lines') }), digits: 0 });
-        maxLogLinesRow.connect('notify::value', () => settings.set_int('max-log-lines', maxLogLinesRow.value));
-        logControlsGroup.add(maxLogLinesRow);
-
         const clearLogsActionRow = new Adw.ActionRow({ title: _('Clear All Stored Logs') });
         const clearButtonForAction = new Gtk.Button({ label: _('Clear') });
         clearButtonForAction.connect('clicked', () => settings.set_strv('uxplay-logs', []));
@@ -246,7 +343,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         logControlsGroup.add(clearLogsActionRow);
         logsPage.add(logControlsGroup);
 
-        const aboutPage = new Adw.PreferencesPage({ title: _('About'), icon_name: 'help-about-symbolic' });
+        const aboutPage = new Adw.PreferencesPage({ name: 'about', title: _('About'), icon_name: 'help-about-symbolic' });
 
         const extensionGroup = new Adw.PreferencesGroup({ title: _('Extension Information') });
         const md = this.metadata || {};
@@ -290,16 +387,13 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         devDescLabel.add_css_class('dim-label');
 
         const buttonsBox = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 10, halign: Gtk.Align.CENTER, css_classes: ['about-buttons'] });
-        const paypalLabel = new Gtk.Label({ label: _('PayPal: travix10x@icloud.com'), css_classes: ['about-button'], selectable: true });
-        
-        const bankButton = new Gtk.Button({ label: _('Support via Bank'), css_classes: ['about-button'] });
-        bankButton.connect('clicked', () => { try { Gio.AppInfo.launch_default_for_uri('https://xxanqw.pp.ua/donate', null); } catch (e) {} });
+        const patreonButton = new Gtk.Button({ label: _('Support on Patreon'), css_classes: ['about-button'] });
+        patreonButton.connect('clicked', () => { try { Gio.AppInfo.launch_default_for_uri('https://patreon.com/xxanqw', null); } catch (e) {} });
 
         const projectButton = new Gtk.Button({ label: _('Project GitHub'), css_classes: ['about-button'] });
         projectButton.connect('clicked', () => { try { Gio.AppInfo.launch_default_for_uri('https://xxanqw.pp.ua/uxpc', null); } catch (e) {} });
 
-        buttonsBox.append(paypalLabel);
-        buttonsBox.append(bankButton);
+        buttonsBox.append(patreonButton);
         buttonsBox.append(projectButton);
 
         developerGroup.add(avatar);
@@ -322,6 +416,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
             errorPage.add(errorGroup);
             window.add(errorPage);
 
+            generalPage.set_sensitive(false);
             serverPage.set_sensitive(false);
             videoPage.set_sensitive(false);
             audioPage.set_sensitive(false);
@@ -329,6 +424,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
             logsPage.set_sensitive(false);
         }
 
+        window.add(generalPage);
         window.add(serverPage);
         window.add(videoPage);
         window.add(audioPage);

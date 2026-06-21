@@ -245,5 +245,22 @@
       <summary>Maximum number of log lines to store</summary>
       <description>Defines the maximum number of log lines to keep in GSettings. Oldest lines are removed first. Higher values may impact performance.</description>
     </key>
+
+    <key name="first-run-completed" type="b">
+      <default>false</default>
+      <summary>Tracks whether the first-run/migration flow has completed</summary>
+      <description>Internal. Set automatically after the first migration or first-run notification has been handled.</description>
+    </key>
+    <key name="autostart-on-login" type="b">
+      <default>false</default>
+      <summary>Start UXPlay automatically at login</summary>
+      <description>Adds a user-level XDG autostart entry that launches UXPlay with the current config file when you log in.</description>
+    </key>
+    <key name="autostart-delay" type="i">
+      <default>5</default>
+      <range min="0" max="300"/>
+      <summary>Autostart delay (seconds)</summary>
+      <description>Wait this many seconds after login before launching UXPlay. 0 launches immediately.</description>
+    </key>
   </schema>
 </schemalist>
