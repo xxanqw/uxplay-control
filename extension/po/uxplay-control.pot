@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-21 20:42+0200\n"
+"POT-Creation-Date: 2026-06-21 20:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -632,22 +632,18 @@ msgid "smol ukrainian dev🤫"
 msgstr ""
 
 #: prefs.js:390
-msgid "PayPal: travix10x@icloud.com"
+msgid "Support on Patreon"
 msgstr ""
 
-#: prefs.js:392
-msgid "Support via Bank"
-msgstr ""
-
-#: prefs.js:395
+#: prefs.js:393
 msgid "Project GitHub"
 msgstr ""
 
-#: prefs.js:411 prefs.js:414
+#: prefs.js:408 prefs.js:411
 msgid "UXPlay Not Found"
 msgstr ""
 
-#: prefs.js:415
+#: prefs.js:412
 msgid ""
 "UXPlay is not installed or not in your system's PATH.\n"
 "\n"

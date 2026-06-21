@@ -189,10 +189,10 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
 
         const serverPage = new Adw.PreferencesPage({ name: 'server-security', title: _('Server & Security'), icon_name: 'network-server-symbolic' });
 
-        const identityGroup = new Adw.PreferencesGroup({ title: _('Server Identity') });
-        addTextRow(identityGroup, _('MAC Address (Device ID)'), 'mac-address');
-        addTextRow(identityGroup, _('BLE Beacon File'), 'ble-beacon');
-        serverPage.add(identityGroup);
+        const hardwareGroup = new Adw.PreferencesGroup({ title: _('Hardware Identity') });
+        addTextRow(hardwareGroup, _('MAC Address (Device ID)'), 'mac-address');
+        addTextRow(hardwareGroup, _('BLE Beacon File'), 'ble-beacon');
+        serverPage.add(hardwareGroup);
 
         const networkGroup = new Adw.PreferencesGroup({ title: _('Network & Ports') });
         addSwitchRow(networkGroup, _('Legacy AirPlay Ports'), 'legacy-ports');
@@ -387,16 +387,13 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         devDescLabel.add_css_class('dim-label');
 
         const buttonsBox = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 10, halign: Gtk.Align.CENTER, css_classes: ['about-buttons'] });
-        const paypalLabel = new Gtk.Label({ label: _('PayPal: travix10x@icloud.com'), css_classes: ['about-button'], selectable: true });
-        
-        const bankButton = new Gtk.Button({ label: _('Support via Bank'), css_classes: ['about-button'] });
-        bankButton.connect('clicked', () => { try { Gio.AppInfo.launch_default_for_uri('https://xxanqw.pp.ua/donate', null); } catch (e) {} });
+        const patreonButton = new Gtk.Button({ label: _('Support on Patreon'), css_classes: ['about-button'] });
+        patreonButton.connect('clicked', () => { try { Gio.AppInfo.launch_default_for_uri('https://patreon.com/xxanqw', null); } catch (e) {} });
 
         const projectButton = new Gtk.Button({ label: _('Project GitHub'), css_classes: ['about-button'] });
         projectButton.connect('clicked', () => { try { Gio.AppInfo.launch_default_for_uri('https://xxanqw.pp.ua/uxpc', null); } catch (e) {} });
 
-        buttonsBox.append(paypalLabel);
-        buttonsBox.append(bankButton);
+        buttonsBox.append(patreonButton);
         buttonsBox.append(projectButton);
 
         developerGroup.add(avatar);
