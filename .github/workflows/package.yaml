@@ -7,16 +7,25 @@ jobs:
   package:
     runs-on: ubuntu-latest
 
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Set up Node.js 24
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24'
 
     - name: Cache apt packages
       uses: actions/cache@v4
       with:
         path: |
           /var/cache/apt/archives/*.deb
-          /var/lib/apt/lists/*
+          !/var/cache/apt/archives/partial/
+          !/var/lib/apt/lists/partial/
         key: ${{ runner.os }}-apt-${{ hashFiles('**/.github/workflows/package.yaml') }}
         restore-keys: |
           ${{ runner.os }}-apt-
