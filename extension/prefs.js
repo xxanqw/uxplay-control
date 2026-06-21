@@ -86,6 +86,11 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
             icon_name: 'preferences-system-symbolic',
         });
 
+        const identityGroup = new Adw.PreferencesGroup({ title: _('Server Identity') });
+        addTextRow(identityGroup, _('Server Name'), 'server-name');
+        addSwitchRow(identityGroup, _('No Hostname Suffix'), 'no-hostname');
+        generalPage.add(identityGroup);
+
         const startupGroup = new Adw.PreferencesGroup({
             title: _('Startup'),
             description: _('Launch UXPlay automatically when you log in.'),
@@ -128,11 +133,6 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
             if (_autostartConn1) settings.disconnect(_autostartConn1);
             if (_autostartConn2) settings.disconnect(_autostartConn2);
         });
-
-        const identityGroup = new Adw.PreferencesGroup({ title: _('Server Identity') });
-        addTextRow(identityGroup, _('Server Name'), 'server-name');
-        addSwitchRow(identityGroup, _('No Hostname Suffix'), 'no-hostname');
-        generalPage.add(identityGroup);
 
         const behaviorGroup = new Adw.PreferencesGroup({ title: _('Behavior') });
         addComboRow(behaviorGroup, _('Screensaver behavior'), 'screensaver',
