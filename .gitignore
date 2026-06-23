@@ -2,3 +2,4 @@ gschemas.compiled
 resources.gresource
 uxplay-control@xxanqw.shell-extension.zip
 extension/locale/
+po/uxplay-control.pot

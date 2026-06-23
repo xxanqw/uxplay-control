@@ -8,6 +8,10 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { syncAutostart } from './autostart.js';
 
+Gio._promisify(Gio.File.prototype, 'enumerate_children_async');
+Gio._promisify(Gio.File.prototype, 'load_contents_async');
+Gio._promisify(Gio.File.prototype, 'replace_contents_bytes_async', 'replace_contents_finish');
+
 function _configDir() {
     return GLib.build_filenamev([GLib.get_user_config_dir(), 'uxplay-control']);
 }
@@ -19,25 +23,27 @@ function _configFile() {
 const CURRENT_SCHEMA_VERSION = 8;
 const INTERNAL_SETTINGS_KEYS = new Set(['schema-version', 'uxplay-logs', 'first-run-completed', 'autostart-on-login', 'autostart-delay']);
 
-function _findRunningUxplayPid() {
+async function _findRunningUxplayPid() {
     try {
         const procDir = Gio.File.new_for_path('/proc');
-        const enumerator = procDir.enumerate_children(
+        const iter = await procDir.enumerate_children_async(
             'standard::name',
             Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
+            GLib.PRIORITY_DEFAULT,
             null
         );
-        let info;
-        while ((info = enumerator.next_file(null)) !== null) {
+        for await (const info of iter) {
             const name = info.get_name();
             if (!/^\d+$/.test(name)) continue;
             const pid = parseInt(name, 10);
+            const commFile = Gio.File.new_for_path(`/proc/${pid}/comm`);
             try {
-                const commFile = Gio.File.new_for_path(`/proc/${pid}/comm`);
-                const [, contents] = commFile.load_contents(null);
+                const [, contents] = await commFile.load_contents_async(null);
                 const comm = new TextDecoder().decode(contents).trim();
                 if (comm === 'uxplay') return pid;
-            } catch (_) {}
+            } catch (_) {
+                // Process may have exited before we could read its comm; ignore.
+            }
         }
     } catch (e) {
         console.error(`UXPlayControl: failed to scan /proc: ${e.message}`);
@@ -47,10 +53,7 @@ function _findRunningUxplayPid() {
 
 function _sendSignalToPid(pid, signal) {
     const launcher = new Gio.SubprocessLauncher({ flags: Gio.SubprocessFlags.NONE });
-    const proc = launcher.spawnv(['kill', `-${signal}`, String(pid)]);
-    proc.wait_async(null, (p, res) => {
-        try { p.wait_finish(res); } catch (_) {}
-    });
+    launcher.spawnv(['kill', `-${signal}`, String(pid)]);
 }
 
 function _buildConfigContent(settings) {
@@ -193,19 +196,20 @@ function _buildConfigContent(settings) {
     return lines.join('\n');
 }
 
-function _writeConfigFile(settings) {
+async function _writeConfigFile(settings) {
     try {
         GLib.mkdir_with_parents(_configDir(), 0o755);
         const content = _buildConfigContent(settings);
         const file = Gio.File.new_for_path(_configFile());
-        const [ok] = file.replace_contents(
-            new TextEncoder().encode(content),
+        const bytes = new GLib.Bytes(new TextEncoder().encode(content));
+        const [ok] = await file.replace_contents_bytes_async(
+            bytes,
             null,
             false,
             Gio.FileCreateFlags.REPLACE_DESTINATION,
             null
         );
-        if (!ok) throw new Error('replace_contents returned false');
+        if (!ok) throw new Error('replace_contents_bytes_async returned false');
         return true;
     } catch (e) {
         console.error(`UXPlayControl: Failed to write config file: ${e.message}`);
@@ -226,11 +230,11 @@ function _hasNonDefaultSettings(settings) {
     return false;
 }
 
-function _checkAndMigrate(settings) {
+async function _checkAndMigrate(settings) {
     if (settings.get_int('schema-version') >= CURRENT_SCHEMA_VERSION) return;
 
     const wasUpgrade = _hasNonDefaultSettings(settings);
-    const writeOk = _writeConfigFile(settings);
+    const writeOk = await _writeConfigFile(settings);
     settings.set_int('schema-version', CURRENT_SCHEMA_VERSION);
 
     if (!writeOk) {
@@ -265,6 +269,7 @@ const UXPlayIndicator = GObject.registerClass(
             this._stderrCancellable = null;
             this._killTimeoutId = null;
             this._adoptCheckTimeoutId = null;
+            this._isDestroyed = false;
 
             this._icon = new St.Icon({
                 gicon: Gio.icon_new_for_string('resource:///org/gnome/shell/extensions/uxplay-control/icons/overlapping-windows-symbolic.svg'),
@@ -285,10 +290,10 @@ const UXPlayIndicator = GObject.registerClass(
             this.menu.addMenuItem(this._settingsItem);
 
             this._updateUI();
-            this._adoptExistingOrScheduleCheck();
+            this._adoptExistingOrScheduleCheck().catch(() => {});
         }
 
-        _detectExistingUxplayPid() {
+        async _detectExistingUxplayPid() {
             return _findRunningUxplayPid();
         }
 
@@ -310,8 +315,10 @@ const UXPlayIndicator = GObject.registerClass(
             });
         }
 
-        _adoptExistingOrScheduleCheck() {
-            const pid = this._detectExistingUxplayPid();
+        async _adoptExistingOrScheduleCheck() {
+            if (this._isDestroyed) return;
+            const pid = await this._detectExistingUxplayPid();
+            if (this._isDestroyed) return;
             if (pid) {
                 this._adoptExistingUxplay(pid);
                 return;
@@ -326,9 +333,10 @@ const UXPlayIndicator = GObject.registerClass(
                     this._adoptCheckTimeoutId = GLib.timeout_add_seconds(
                         GLib.PRIORITY_DEFAULT, delay + 1, () => {
                             this._adoptCheckTimeoutId = null;
-                            if (this._isRunning) return GLib.SOURCE_REMOVE;
-                            const p = this._detectExistingUxplayPid();
-                            if (p) this._adoptExistingUxplay(p);
+                            if (this._isRunning || this._isDestroyed) return GLib.SOURCE_REMOVE;
+                            this._detectExistingUxplayPid().then(p => {
+                                if (!this._isDestroyed && p) this._adoptExistingUxplay(p);
+                            }).catch(() => {});
                             return GLib.SOURCE_REMOVE;
                         }
                     );
@@ -402,13 +410,13 @@ const UXPlayIndicator = GObject.registerClass(
 
         _toggleUXPlay() {
             if (this._isRunning) this._stopUXPlay();
-            else this._startUXPlay();
+            else this._startUXPlay().catch(() => {});
         }
 
-        _startUXPlay() {
+        async _startUXPlay() {
             if (this._isRunning || !this._isUxPlayAvailable || !this._settings) return;
 
-            _writeConfigFile(this._settings);
+            await _writeConfigFile(this._settings);
 
             try {
                 const launcher = new Gio.SubprocessLauncher({
@@ -466,14 +474,22 @@ const UXPlayIndicator = GObject.registerClass(
 
             const sendSigterm = () => {
                 if (this._uxplaySubprocess) {
-                    try { this._uxplaySubprocess.send_signal(15); } catch (_) {}
+                    try {
+                        this._uxplaySubprocess.send_signal(15);
+                    } catch (_) {
+                        // Process already exited; ignore.
+                    }
                 } else if (this._uxplayProcess) {
                     _sendSignalToPid(this._uxplayProcess, 15);
                 }
             };
             const forceKill = () => {
                 if (this._uxplaySubprocess) {
-                    try { this._uxplaySubprocess.force_exit(); } catch (_) {}
+                    try {
+                        this._uxplaySubprocess.force_exit();
+                    } catch (_) {
+                        // Process already exited; ignore.
+                    }
                 } else if (this._uxplayProcess) {
                     _sendSignalToPid(this._uxplayProcess, 9);
                 }
@@ -517,6 +533,7 @@ const UXPlayIndicator = GObject.registerClass(
         }
 
         destroy() {
+            this._isDestroyed = true;
             if (this._isRunning) {
                 this._stopUXPlay();
             } else {
@@ -547,19 +564,21 @@ export default class UXPlayControlExtension extends Extension {
         const resourcePath = GLib.build_filenamev([this.path, 'resources.gresource']);
         try {
             Gio.resources_register(Gio.Resource.load(resourcePath));
-        } catch (e) {}
+        } catch (e) {
+            console.error(`UXPlayControl: failed to register resources: ${e.message}`);
+        }
 
         this._settings = this.getSettings();
-        _checkAndMigrate(this._settings);
+        _checkAndMigrate(this._settings).catch(() => {});
 
         this._settings.connectObject('changed', (_settings, key) => {
-            if (!INTERNAL_SETTINGS_KEYS.has(key)) _writeConfigFile(this._settings);
+            if (!INTERNAL_SETTINGS_KEYS.has(key)) _writeConfigFile(this._settings).catch(() => {});
         }, this);
 
         this._settings.connectObject('changed::autostart-on-login',
-            () => syncAutostart(this._settings), this);
+            () => syncAutostart(this._settings).catch(() => {}), this);
         this._settings.connectObject('changed::autostart-delay',
-            () => syncAutostart(this._settings), this);
+            () => syncAutostart(this._settings).catch(() => {}), this);
 
         const isUxPlayAvailable = !!GLib.find_program_in_path('uxplay');
         this._indicator = new UXPlayIndicator(this._settings, () => this.openPreferences(), isUxPlayAvailable);
@@ -570,7 +589,11 @@ export default class UXPlayControlExtension extends Extension {
         this._settings?.disconnectObject(this);
 
         const resourcePath = GLib.build_filenamev([this.path, 'resources.gresource']);
-        try { Gio.resources_unregister(Gio.Resource.load(resourcePath)); } catch (_) {}
+        try {
+            Gio.resources_unregister(Gio.Resource.load(resourcePath));
+        } catch (_) {
+            // Resource may not have been registered; ignore.
+        }
 
         if (this._indicator) {
             this._indicator.destroy();

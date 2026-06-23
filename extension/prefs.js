@@ -33,7 +33,9 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
                 cssProvider.load_from_file(Gio.File.new_for_path(cssPath));
                 Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), cssProvider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
             }
-        } catch (e) {}
+        } catch (_) {
+            // Stylesheet is optional; ignore load failures.
+        }
 
         const getSummary = (key, defaultSubtitle = '') => {
             if (!settings || !settings.settings_schema) return defaultSubtitle;
@@ -120,15 +122,18 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
                 button_label: _('Installation help'),
             });
             banner.connect('button-clicked', () => {
-                try { Gio.AppInfo.launch_default_for_uri('https://github.com/FDH2/UxPlay#after-installation', null); }
-                catch (_) {}
+                try {
+                    Gio.AppInfo.launch_default_for_uri('https://github.com/FDH2/UxPlay#after-installation', null);
+                } catch (_) {
+                    // No application available to handle the URI; ignore.
+                }
             });
             if (typeof generalPage.set_banner === 'function') generalPage.set_banner(banner);
         }
 
-        _syncAutostart(settings);
-        const _autostartConn1 = settings.connect('changed::autostart-on-login', () => _syncAutostart(settings));
-        const _autostartConn2 = settings.connect('changed::autostart-delay', () => _syncAutostart(settings));
+        _syncAutostart(settings).catch(() => {});
+        const _autostartConn1 = settings.connect('changed::autostart-on-login', () => _syncAutostart(settings).catch(() => {}));
+        const _autostartConn2 = settings.connect('changed::autostart-delay', () => _syncAutostart(settings).catch(() => {}));
         window.connect('close-request', () => {
             if (_autostartConn1) settings.disconnect(_autostartConn1);
             if (_autostartConn2) settings.disconnect(_autostartConn2);
@@ -177,7 +182,7 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
                 const schema = settings.settings_schema;
                 if (!schema) return;
                 for (const key of schema.list_keys()) {
-                    try { settings.reset(key); } catch (_) {}
+                    settings.reset(key);
                 }
             });
             dialog.present(window);
@@ -368,7 +373,9 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
         const resourceBundlePath = GLib.build_filenamev([(this.metadata && this.metadata.path) ? this.metadata.path : this.path, 'resources.gresource']);
         try {
             Gio.resources_register(Gio.Resource.load(resourceBundlePath));
-        } catch (e) {}
+        } catch (_) {
+            // Resource bundle missing or corrupt; avatar will use fallback.
+        }
 
         try {
             const resourcePath = '/org/gnome/shell/extensions/uxplay-control/icons/ava.png';
@@ -377,7 +384,9 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
                 const pixbuf = GdkPixbuf.Pixbuf.new_from_stream_at_scale(stream, 100, 100, true, null);
                 avatar.set_custom_image(Gdk.Texture.new_for_pixbuf(pixbuf));
             }
-        } catch (e) {}
+        } catch (_) {
+            // Avatar image not available; keep the default.
+        }
 
         const nicknameLabel = new Gtk.Label({ label: _('xxanqw'), halign: Gtk.Align.CENTER });
         nicknameLabel.add_css_class('title-3');
@@ -388,10 +397,22 @@ export default class UXPlayControlPreferences extends ExtensionPreferences {
 
         const buttonsBox = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 10, halign: Gtk.Align.CENTER, css_classes: ['about-buttons'] });
         const patreonButton = new Gtk.Button({ label: _('Support on Patreon'), css_classes: ['about-button'] });
-        patreonButton.connect('clicked', () => { try { Gio.AppInfo.launch_default_for_uri('https://patreon.com/xxanqw', null); } catch (e) {} });
+        patreonButton.connect('clicked', () => {
+            try {
+                Gio.AppInfo.launch_default_for_uri('https://patreon.com/xxanqw', null);
+            } catch (_) {
+                // No application available to handle the URI; ignore.
+            }
+        });
 
         const projectButton = new Gtk.Button({ label: _('Project GitHub'), css_classes: ['about-button'] });
-        projectButton.connect('clicked', () => { try { Gio.AppInfo.launch_default_for_uri('https://xxanqw.pp.ua/uxpc', null); } catch (e) {} });
+        projectButton.connect('clicked', () => {
+            try {
+                Gio.AppInfo.launch_default_for_uri('https://xxanqw.pp.ua/uxpc', null);
+            } catch (_) {
+                // No application available to handle the URI; ignore.
+            }
+        });
 
         buttonsBox.append(patreonButton);
         buttonsBox.append(projectButton);
